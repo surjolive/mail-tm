@@ -2,7 +2,13 @@
 require_once '../config.php';
 header('Content-Type: text/html; charset=utf-8');
 
-session_start();
+    // Security: Secure cookie session
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_only_cookies', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    session_start();
 
 // Database Connection
 $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
@@ -101,6 +107,17 @@ $total_keys = $pdo->query("SELECT COUNT(*) FROM api_keys")->fetchColumn();
 $active_keys = $pdo->query("SELECT COUNT(*) FROM api_keys WHERE status = 'active'")->fetchColumn();
 $recent_activity = $pdo->query("SELECT * FROM activity_log ORDER BY created_at DESC LIMIT 50")->fetchAll();
 $all_accounts = $pdo->query("SELECT * FROM accounts ORDER BY created_at DESC LIMIT 100")->fetchAll();
+
+// Handle Account Deletion
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
+    $del_id = $_POST['delete_account_id'] ?? 0;
+    if ($del_id > 0) {
+        $stmt = $pdo->prepare("DELETE FROM accounts WHERE id = ?");
+        $stmt->execute([$del_id]);
+        header('Location: ./index.php?account_deleted=1');
+        exit;
+    }
+}
 
 // Handle Settings Update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_settings'])) {
@@ -458,7 +475,10 @@ $smtp_config = [
                                     <td class="px-6 py-4 text-sm font-bold text-slate-700"><?php echo $acc['address']; ?></td>
                                     <td class="px-6 py-4 text-sm text-slate-500"><?php echo $acc['created_at']; ?></td>
                                     <td class="px-6 py-4 text-right">
-                                        <button class="text-red-500 hover:text-red-700 font-bold text-xs">Delete</button>
+                                        <form method="POST" onsubmit="return confirm('Are you sure you want to delete this account?');" style="display:inline;">
+                                            <input type="hidden" name="delete_account_id" value="<?php echo $acc['id']; ?>">
+                                            <button type="submit" name="delete_account" class="text-red-500 hover:text-red-700 font-bold text-xs">Delete</button>
+                                        </form>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>

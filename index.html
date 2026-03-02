@@ -148,27 +148,7 @@
     </style>
 </head>
 <body class="text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
-    <div id="auth-gate" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[200]">
-        <div class="bg-white p-10 rounded-[3rem] shadow-2xl w-full max-w-lg text-center space-y-8 mx-4">
-            <div class="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center mx-auto shadow-xl shadow-indigo-200">
-                <span class="text-white text-4xl font-black italic">F</span>
-            </div>
-            <div class="space-y-2">
-                <h1 class="text-3xl font-black text-slate-900 tracking-tight">API Access Required</h1>
-                <p class="text-slate-500 font-medium">To use the API and mail services, please login to your account.</p>
-            </div>
-            <div class="grid grid-cols-1 gap-4">
-                <button onclick="showLoginModal()" class="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-3">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </button>
-            </div>
-            <div class="pt-4">
-                <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Powered by F Mail API</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="app" class="min-h-screen flex overflow-hidden hidden">
+    <div id="app" class="min-h-screen flex overflow-hidden">
         <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-8">
@@ -181,16 +161,48 @@
                 </div>
 
                 <nav class="space-y-0.5">
-                    <button onclick="showPage('api')" id="btn-api-nav" class="sidebar-link active flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-pink-600 transition-colors text-left">
+                    <button onclick="showPage('inbox')" id="btn-inbox" class="sidebar-link active flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg transition-colors text-left text-indigo-600">
+                        <i class="far fa-envelope text-lg opacity-70"></i> <span class="translate-key" data-key="inbox">Inbox</span>
+                    </button>
+                    <button onclick="showPage('admin')" id="btn-admin" class="sidebar-link hidden flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-slate-600 transition-colors text-left">
+                        <i class="fas fa-user-shield text-lg opacity-70"></i> <span>Admin Panel</span>
+                    </button>
+                                <button onclick="showPage('inbox'); handleSidebarRefresh(this);" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-emerald-600 transition-colors text-left group">
+                        <i class="fas fa-rotate text-lg opacity-70 group-active:rotate-180 transition-transform duration-500"></i> <span class="translate-key" data-key="refresh">Refresh</span>
+                    </button>
+                    <button onclick="exportInbox()" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-blue-600 transition-colors text-left group">
+                        <i class="fas fa-file-export text-lg opacity-70"></i> <span>Export Inbox</span>
+                    </button>
+                    <button onclick="showPage('api')" id="btn-api-nav" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-pink-600 transition-colors text-left">
                         <i class="fas fa-plug text-lg opacity-70"></i> <span>Mail Services</span>
                     </button>
-                    <button onclick="logout()" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-slate-600 transition-colors text-left">
-                        <i class="fas fa-sign-out-alt text-lg opacity-70"></i> <span>Logout</span>
+                    <button onclick="showPage('super')" id="btn-super" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-amber-600 transition-colors text-left group">
+                        <i class="fas fa-crown text-lg opacity-70 group-hover:scale-110 transition-transform"></i> <span class="translate-key" data-key="super_services">Super Services</span>
+                    </button>
+                    <button onclick="showPage('premium')" id="btn-premium" class="sidebar-link flex items-center justify-between px-4 py-2.5 w-full text-sm font-medium rounded-lg text-violet-600 transition-colors text-left group">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-rocket text-lg opacity-70 group-hover:scale-110 transition-transform"></i> <span class="translate-key" data-key="premium">Premium Service</span>
+                        </div>
+                        <span class="text-[10px] bg-violet-100 text-violet-600 px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap group-hover:bg-violet-600 group-hover:text-white transition-all">COM</span>
                     </button>
                 </nav>
             </div>
             <div class="mt-auto p-6 space-y-6 text-left">
-                <p class="text-[11px] text-slate-400 font-medium">© F Mail API</p>
+                <div class="space-y-0.5 border-t border-slate-100 pt-4 text-sm text-slate-600">
+                    <button onclick="showPage('api')" id="btn-api" class="translate-key block w-full px-4 py-2 hover:text-pink-600 transition-colors text-left" data-key="api">API</button>
+                    <button onclick="showPage('faq')" id="btn-faq" class="translate-key block w-full px-4 py-2 hover:text-emerald-600 transition-colors text-left" data-key="faq">FAQ</button>
+                    <button onclick="showPage('privacy')" id="btn-privacy" class="translate-key block w-full px-4 py-2 hover:text-blue-600 transition-colors text-left" data-key="privacy">Privacy</button>
+                    <button onclick="showPage('feedback')" id="btn-feedback" class="translate-key block w-full px-4 py-2 hover:text-orange-600 transition-colors text-left" data-key="feedback">Feedback</button>
+                    <button onclick="showPage('contacts')" id="btn-contacts" class="translate-key block w-full px-4 py-2 hover:text-rose-600 transition-colors text-left" data-key="contacts">Contacts</button>
+                    <button onclick="showPage('more')" id="btn-more" class="block w-full px-4 py-2 text-indigo-600 font-bold hover:underline text-left">More</button>
+                </div>
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-700/50">
+                    <div id="storage-usage-text" class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-2">0 B / 100 MB</div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                        <div id="storage-progress-bar" class="bg-indigo-600 h-full w-0 rounded-full transition-all duration-500"></div>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 font-medium">© F Mail</p>
             </div>
         </aside>
 
@@ -404,11 +416,11 @@
                             <!-- Auto Refresh Feature -->
                             <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-700 w-fit">
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="auto-refresh-toggle" class="sr-only peer" onchange="toggleAutoRefresh()">
+                                    <input type="checkbox" id="auto-refresh-toggle" class="sr-only peer" checked onchange="toggleAutoRefresh()">
                                     <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                                     <span class="ml-3 text-[14px] font-bold text-slate-700 dark:text-slate-300">Auto Refresh</span>
                                 </label>
-                                <div id="refresh-timer" class="hidden text-[12px] font-black text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 rounded-xl tabular-nums shadow-sm border border-indigo-100 dark:border-indigo-500/20">15s</div>
+                                <div id="refresh-timer" class="text-[12px] font-black text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 rounded-xl tabular-nums shadow-sm border border-indigo-100 dark:border-indigo-500/20">15s</div>
                             </div>
                             <div id="messages-grid" class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm divide-y divide-slate-50 dark:divide-slate-700 text-slate-900 dark:text-white">
                                 <!-- Skeleton Loaders -->
@@ -1179,18 +1191,6 @@
 
         function updateUI() {
             const hasAccount = account !== null;
-            const appEl = document.getElementById('app');
-            const authGateEl = document.getElementById('auth-gate');
-
-            if (hasAccount) {
-                if (appEl) appEl.classList.remove('hidden');
-                if (authGateEl) authGateEl.classList.add('hidden');
-                showPage('api'); // Force show API page
-            } else {
-                if (appEl) appEl.classList.add('hidden');
-                if (authGateEl) authGateEl.classList.remove('hidden');
-            }
-
             const apiNoAccount = document.getElementById('api-no-account');
             const apiHasAccount = document.getElementById('api-has-account');
             if (apiNoAccount) {
@@ -1529,9 +1529,11 @@
             }
         }
         
-        function showPage(p) {
-            if (p !== 'api') p = 'api'; // Force only API page
+        function showPage(p, updateHash = true) {
             console.log("showPage called with:", p);
+            if (updateHash) {
+                window.location.hash = p;
+            }
             const sections = ['inbox', 'api', 'faq', 'privacy', 'feedback', 'contacts', 'premium', 'admin', 'more', 'super'];
             sections.forEach(id => {
                 const el = document.getElementById('page-' + id);
@@ -1580,14 +1582,7 @@
 
         function showDeleteModal() { document.getElementById('delete-modal').classList.remove('hidden'); document.getElementById('account-menu').classList.add('hidden'); }
         function hideDeleteModal() { document.getElementById('delete-modal').classList.add('hidden'); }
-        function logout() {
-            localStorage.clear();
-            token = null;
-            account = null;
-            password = null;
-            updateUI();
-            showPage('inbox');
-        }
+        function logout() { localStorage.clear(); location.reload(); }
         function confirmDelete() { logout(); }
 
         function submitFeedback() {
@@ -1598,7 +1593,7 @@
             }
         }
 
-        let isPassVisible = false;
+        const isPassVisible = { value: false };
         function togglePasswordReveal() {
             if (!password) {
                 // Fallback to local storage if password variable is empty
@@ -1606,27 +1601,38 @@
             }
             if (!password) return;
             
-            isPassVisible = !isPassVisible;
-            const passEl = document.getElementById('menu-password-masked');
-            const eyeIcon = document.getElementById('pass-eye-icon');
+            const passMasked = document.getElementById('menu-password-masked');
+            const passEye = document.getElementById('pass-eye-icon');
             
-            if (isPassVisible) {
-                passEl.innerText = password;
-                if (eyeIcon) {
-                    eyeIcon.classList.remove('fa-eye');
-                    eyeIcon.classList.add('fa-eye-slash');
-                }
+            isPassVisible.value = !isPassVisible.value;
+            
+            if (isPassVisible.value) {
+                passMasked.innerText = password;
+                passMasked.classList.remove('tracking-wider');
+                passEye.classList.remove('fa-eye');
+                passEye.classList.add('fa-eye-slash');
                 
-                // Copy to clipboard
+                // Auto copy to clipboard
                 navigator.clipboard.writeText(password).then(() => {
-                    // Visual feedback
-                    passEl.classList.add('text-emerald-500');
+                    const originalText = passMasked.innerText;
+                    // Visual feedback for copy
+                    const copyFeedback = document.createElement('span');
+                    copyFeedback.innerText = ' (Copied!)';
+                    copyFeedback.className = 'text-[10px] text-emerald-500 ml-1 animate-pulse';
+                    passMasked.appendChild(copyFeedback);
                     setTimeout(() => {
-                        passEl.classList.remove('text-emerald-500');
-                    }, 1500);
+                        if (passMasked.contains(copyFeedback)) {
+                            passMasked.removeChild(copyFeedback);
+                        }
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Could not copy password: ', err);
                 });
             } else {
-                passEl.innerText = '••••••••••••';
+                passMasked.innerText = '••••••••••••';
+                passMasked.classList.add('tracking-wider');
+                passEye.classList.remove('fa-eye-slash');
+                passEye.classList.add('fa-eye');
                 if (eyeIcon) {
                     eyeIcon.classList.remove('fa-eye-slash');
                     eyeIcon.classList.add('fa-eye');
@@ -1717,6 +1723,15 @@
                 localStorage.setItem('mail_acc', JSON.stringify(account));
                 localStorage.setItem('mail_pass', password);
                 
+                // Log account creation to local DB for admin activity tracking
+                try {
+                    await fetch(`api.php?action=register_account`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `address=${encodeURIComponent(addr)}&password=${encodeURIComponent(finalPass)}`
+                    });
+                } catch (logErr) { console.error("Logging failed", logErr); }
+
                 hideCreateAccountModal();
                 updateUI();
             } catch (err) { 
@@ -2252,13 +2267,33 @@
 
         // Initialize
         renderLanguageMenu(); renderFAQ(); updateUI(); updateTranslations();
-        checkAdmin();
-        
-        // Auto-detect system dark mode or saved preference
-        const savedDarkMode = localStorage.getItem('dark_mode');
-        if (savedDarkMode === 'true' || (savedDarkMode === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            if (!darkMode) toggleDarkMode();
-        }
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                showPage(hash, false);
+            } else {
+                showPage('inbox', false);
+            }
+        });
+
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                showPage(hash, false);
+            } else {
+                showPage('inbox', false);
+            }
+            checkAdmin();
+            
+            // Auto-detect system dark mode or saved preference
+            const savedDarkMode = localStorage.getItem('dark_mode');
+            if (savedDarkMode === 'true' || (savedDarkMode === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                if (!darkMode) toggleDarkMode();
+            }
+
+            // Start auto-refresh by default
+            toggleAutoRefresh();
+        });
         
         // Ensure email shows up correctly if account exists
         if (account) {
