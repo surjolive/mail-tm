@@ -1664,11 +1664,13 @@
                 try {
                     const res = await fetch(`api.php?action=get_allowed_domains`);
                     const data = await res.json();
-                    if (data.domains) {
+                    if (data && data.domains && data.domains.length > 0) {
                         select.innerHTML = data.domains.map(d => `<option value="${d}" class="font-bold py-2">${d}</option>`).join('');
+                    } else {
+                        throw new Error('No domains returned');
                     }
                 } catch (err) {
-                    // Fallback to hardcoded list if API fails
+                    console.error("Domain fetch failed, using fallback:", err);
                     const domains = ["dollicons.com", "oakon.com", "teihu.com", "raleigh-construction.com", "pastryofistanbul.com", "questtechsystems.com"];
                     select.innerHTML = domains.map(d => `<option value="${d}" class="font-bold py-2">${d}</option>`).join('');
                 }
