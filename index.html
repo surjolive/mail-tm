@@ -154,19 +154,16 @@
                 <span class="text-white text-4xl font-black italic">F</span>
             </div>
             <div class="space-y-2">
-                <h1 class="text-3xl font-black text-slate-900 tracking-tight">Welcome to F Mail</h1>
-                <p class="text-slate-500 font-medium">Fast, secure, and private temporary email. Please login or create an account to continue.</p>
+                <h1 class="text-3xl font-black text-slate-900 tracking-tight">API Access Required</h1>
+                <p class="text-slate-500 font-medium">To use the API and mail services, please login to your account.</p>
             </div>
             <div class="grid grid-cols-1 gap-4">
                 <button onclick="showLoginModal()" class="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-3">
-                    <i class="fas fa-sign-in-alt"></i> Login to Account
-                </button>
-                <button onclick="showCreateAccountModal()" class="w-full py-4 bg-white border-2 border-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all flex items-center justify-center gap-3">
-                    <i class="fas fa-user-plus"></i> Create New Address
+                    <i class="fas fa-sign-in-alt"></i> Login
                 </button>
             </div>
             <div class="pt-4">
-                <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Powered by Mail.tm Infrastructure</p>
+                <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Powered by F Mail API</p>
             </div>
         </div>
     </div>
@@ -184,48 +181,16 @@
                 </div>
 
                 <nav class="space-y-0.5">
-                    <button onclick="showPage('inbox')" id="btn-inbox" class="sidebar-link active flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg transition-colors text-left text-indigo-600">
-                        <i class="far fa-envelope text-lg opacity-70"></i> <span class="translate-key" data-key="inbox">Inbox</span>
-                    </button>
-                    <button onclick="showPage('admin')" id="btn-admin" class="sidebar-link hidden flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-slate-600 transition-colors text-left">
-                        <i class="fas fa-user-shield text-lg opacity-70"></i> <span>Admin Panel</span>
-                    </button>
-                                <button onclick="showPage('inbox'); handleSidebarRefresh(this);" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-emerald-600 transition-colors text-left group">
-                        <i class="fas fa-rotate text-lg opacity-70 group-active:rotate-180 transition-transform duration-500"></i> <span class="translate-key" data-key="refresh">Refresh</span>
-                    </button>
-                    <button onclick="exportInbox()" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-blue-600 transition-colors text-left group">
-                        <i class="fas fa-file-export text-lg opacity-70"></i> <span>Export Inbox</span>
-                    </button>
-                    <button onclick="showPage('api')" id="btn-api-nav" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-pink-600 transition-colors text-left">
+                    <button onclick="showPage('api')" id="btn-api-nav" class="sidebar-link active flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-pink-600 transition-colors text-left">
                         <i class="fas fa-plug text-lg opacity-70"></i> <span>Mail Services</span>
                     </button>
-                    <button onclick="showPage('super')" id="btn-super" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-amber-600 transition-colors text-left group">
-                        <i class="fas fa-crown text-lg opacity-70 group-hover:scale-110 transition-transform"></i> <span class="translate-key" data-key="super_services">Super Services</span>
-                    </button>
-                    <button onclick="showPage('premium')" id="btn-premium" class="sidebar-link flex items-center justify-between px-4 py-2.5 w-full text-sm font-medium rounded-lg text-violet-600 transition-colors text-left group">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-rocket text-lg opacity-70 group-hover:scale-110 transition-transform"></i> <span class="translate-key" data-key="premium">Premium Service</span>
-                        </div>
-                        <span class="text-[10px] bg-violet-100 text-violet-600 px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap group-hover:bg-violet-600 group-hover:text-white transition-all">COM</span>
+                    <button onclick="logout()" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-slate-600 transition-colors text-left">
+                        <i class="fas fa-sign-out-alt text-lg opacity-70"></i> <span>Logout</span>
                     </button>
                 </nav>
             </div>
             <div class="mt-auto p-6 space-y-6 text-left">
-                <div class="space-y-0.5 border-t border-slate-100 pt-4 text-sm text-slate-600">
-                    <button onclick="showPage('api')" id="btn-api" class="translate-key block w-full px-4 py-2 hover:text-pink-600 transition-colors text-left" data-key="api">API</button>
-                    <button onclick="showPage('faq')" id="btn-faq" class="translate-key block w-full px-4 py-2 hover:text-emerald-600 transition-colors text-left" data-key="faq">FAQ</button>
-                    <button onclick="showPage('privacy')" id="btn-privacy" class="translate-key block w-full px-4 py-2 hover:text-blue-600 transition-colors text-left" data-key="privacy">Privacy</button>
-                    <button onclick="showPage('feedback')" id="btn-feedback" class="translate-key block w-full px-4 py-2 hover:text-orange-600 transition-colors text-left" data-key="feedback">Feedback</button>
-                    <button onclick="showPage('contacts')" id="btn-contacts" class="translate-key block w-full px-4 py-2 hover:text-rose-600 transition-colors text-left" data-key="contacts">Contacts</button>
-                    <button onclick="showPage('more')" id="btn-more" class="block w-full px-4 py-2 text-indigo-600 font-bold hover:underline text-left">More</button>
-                </div>
-                <div class="pt-4 border-t border-slate-100 dark:border-slate-700/50">
-                    <div id="storage-usage-text" class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-2">0 B / 100 MB</div>
-                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                        <div id="storage-progress-bar" class="bg-indigo-600 h-full w-0 rounded-full transition-all duration-500"></div>
-                    </div>
-                </div>
-                <p class="text-[11px] text-slate-400 font-medium">© F Mail</p>
+                <p class="text-[11px] text-slate-400 font-medium">© F Mail API</p>
             </div>
         </aside>
 
@@ -1220,6 +1185,7 @@
             if (hasAccount) {
                 if (appEl) appEl.classList.remove('hidden');
                 if (authGateEl) authGateEl.classList.add('hidden');
+                showPage('api'); // Force show API page
             } else {
                 if (appEl) appEl.classList.add('hidden');
                 if (authGateEl) authGateEl.classList.remove('hidden');
@@ -1564,6 +1530,7 @@
         }
         
         function showPage(p) {
+            if (p !== 'api') p = 'api'; // Force only API page
             console.log("showPage called with:", p);
             const sections = ['inbox', 'api', 'faq', 'privacy', 'feedback', 'contacts', 'premium', 'admin', 'more', 'super'];
             sections.forEach(id => {
