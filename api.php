@@ -125,27 +125,49 @@ function logActivity($pdo, $action, $details = '') {
     if ($action === 'generate_key') {
         $address = $_GET['address'] ?? '';
         $password = $_GET['password'] ?? '';
-        if (!$address) {
+        if (!$address || !$password) {
             http_response_code(400);
-            echo json_encode(['error' => 'Address required']);
+            echo json_encode(['error' => 'Address and password required']);
             exit;
         }
 
         try {
-            // Check if account exists
+            // Check if account exists locally
             $stmt = $pdo->prepare("SELECT id FROM accounts WHERE address = ?");
             $stmt->execute([$address]);
             $account = $stmt->fetch();
 
             if (!$account) {
-                if ($password) {
+                // Attempt to register account on mail.tm first
+                $ch = curl_init("https://api.mail.tm/accounts");
+                $payload = json_encode([
+                    'address' => $address,
+                    'password' => $password
+                ]);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Accept: application/json'
+                ]);
+                $res = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                // 201 Created or 422 Unprocessable Entity (if already exists on mail.tm)
+                if ($httpCode === 201 || $httpCode === 422) {
                     // Auto-register in local DB
                     $stmt = $pdo->prepare("INSERT INTO accounts (address, password) VALUES (?, ?)");
                     $stmt->execute([$address, $password]);
                     $accountId = $pdo->lastInsertId();
                 } else {
-                    http_response_code(404);
-                    echo json_encode(['error' => 'Account not found in local DB. Please provide password to register.']);
+                    $errorData = json_decode($res, true);
+                    http_response_code($httpCode ?: 500);
+                    echo json_encode([
+                        'error' => 'Failed to create account on mail.tm',
+                        'details' => $errorData['hydra:description'] ?? 'Unknown error'
+                    ]);
                     exit;
                 }
             } else {
