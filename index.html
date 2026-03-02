@@ -1580,6 +1580,13 @@
             }
         }
 
+        function showLoginModal() { 
+            document.getElementById('login-modal').classList.remove('hidden'); 
+            document.getElementById('account-menu').classList.add('hidden'); 
+        }
+        function hideLoginModal() { 
+            document.getElementById('login-modal').classList.add('hidden'); 
+        }
         function showDeleteModal() { document.getElementById('delete-modal').classList.remove('hidden'); document.getElementById('account-menu').classList.add('hidden'); }
         function hideDeleteModal() { document.getElementById('delete-modal').classList.add('hidden'); }
         function logout() { localStorage.clear(); location.reload(); }
