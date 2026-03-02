@@ -2,10 +2,10 @@
 // F Mail Configuration
 
 // Database Settings
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'mail_tm');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_HOST', 'sql312.infinityfree.com');
+define('DB_NAME', 'if0_41277930_mail_tm');
+define('DB_USER', 'if0_41277930');
+define('DB_PASS', 'Surjo25369');
 define('DB_CHARSET', 'utf8mb4');
 
 // BRAND SETTINGS (Will be overridden by DB if exists)
