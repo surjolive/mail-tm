@@ -1,0 +1,2266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F Mail - Fast & Secure Temp Mail</title>
+    <link rel="icon" href="data:image/svg+xml,<svg viewBox='0 0 240 180' xmlns='http://www.w3.org/2000/svg'><rect width='40' height='40' rx='8' fill='%234F46E5'/><text x='10' y='30' fill='white' style='font: italic bold 25px sans-serif;'>F</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        :root {
+            --animate-duration: 0.6s;
+            --animate-delay: 0.1s;
+        }
+
+        body { font-family: 'Plus+Jakarta+Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        
+        .fade-in-up {
+            animation: fadeInUp var(--animate-duration) ease-out both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 20px, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        
+        .hover-scale {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .dark-mode .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+        
+        .dark-mode { background-color: #0f172a; color: #f1f5f9; }
+        .dark-mode body { background-color: #0f172a; color: #f1f5f9; }
+        .dark-mode #hero { background-color: #0f172a !important; }
+        .dark-mode #hero-desc-text { color: #94a3b8 !important; }
+        .dark-mode .sidebar-link.active { background-color: #1e293b; color: #818cf8; border-right: 3px solid #818cf8; }
+        
+        /* Auto-refresh pulse animation */
+        @keyframes pulse-indigo {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+        .refresh-active {
+            animation: pulse-indigo 2s infinite;
+        }
+        
+        .dark-mode aside, .dark-mode header, .dark-mode #account-menu, .dark-mode #language-dropdown, .dark-mode #message-modal > div, .dark-mode #login-modal > div, .dark-mode #delete-modal > div { background-color: #1e293b !important; border-color: #334155 !important; }
+        .dark-mode .bg-white { background-color: #1e293b !important; border-color: #334155 !important; }
+        .dark-mode .text-slate-900 { color: #f8fafc !important; }
+        .dark-mode .text-slate-700 { color: #cbd5e1 !important; }
+        .dark-mode .text-slate-600 { color: #94a3b8 !important; }
+        .dark-mode .text-slate-500 { color: #64748b !important; }
+        .dark-mode .bg-slate-50 { background-color: #334155 !important; }
+        .dark-mode .border-slate-100 { border-color: #334155 !important; }
+        .dark-mode .border-slate-200 { border-color: #475569 !important; }
+        .page-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        .page-transition.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .mail-card-animation {
+            transition: all 0.3s ease;
+        }
+        .mail-card-animation:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .mail-item-anim {
+            animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .float-anim {
+            animation: float 3s ease-in-out infinite;
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        .dark-mode .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .card-pop { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .card-pop:hover { transform: scale(1.03); }
+        .mail-preview {
+            position: absolute;
+            left: 100%;
+            top: 0;
+            width: 300px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            display: none;
+            pointer-events: none;
+        }
+        .dark-mode .mail-preview {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        .group:hover .mail-preview {
+            display: block;
+        }
+    </style>
+</head>
+<body class="text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
+    <div id="app" class="min-h-screen flex overflow-hidden">
+        <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200 dark:shadow-none">
+                            <span class="text-white text-2xl font-black italic">F</span>
+                        </div>
+                        <span class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight brand-name-text">F Mail</span>
+                    </div>
+                </div>
+
+                <nav class="space-y-0.5">
+                    <button onclick="showPage('inbox')" id="btn-inbox" class="sidebar-link active flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg transition-colors text-left text-indigo-600">
+                        <i class="far fa-envelope text-lg opacity-70"></i> <span class="translate-key" data-key="inbox">Inbox</span>
+                    </button>
+                    <button onclick="showPage('admin')" id="btn-admin" class="sidebar-link hidden flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-slate-600 transition-colors text-left">
+                        <i class="fas fa-user-shield text-lg opacity-70"></i> <span>Admin Panel</span>
+                    </button>
+                                <button onclick="showPage('inbox'); handleSidebarRefresh(this);" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-emerald-600 transition-colors text-left group">
+                        <i class="fas fa-rotate text-lg opacity-70 group-active:rotate-180 transition-transform duration-500"></i> <span class="translate-key" data-key="refresh">Refresh</span>
+                    </button>
+                    <button onclick="exportInbox()" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-blue-600 transition-colors text-left group">
+                        <i class="fas fa-file-export text-lg opacity-70"></i> <span>Export Inbox</span>
+                    </button>
+                    <button onclick="showPage('api')" id="btn-api-nav" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-pink-600 transition-colors text-left">
+                        <i class="fas fa-plug text-lg opacity-70"></i> <span>Mail Services</span>
+                    </button>
+                    <button onclick="showPage('super')" id="btn-super" class="sidebar-link flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium rounded-lg text-amber-600 transition-colors text-left group">
+                        <i class="fas fa-crown text-lg opacity-70 group-hover:scale-110 transition-transform"></i> <span class="translate-key" data-key="super_services">Super Services</span>
+                    </button>
+                    <button onclick="showPage('premium')" id="btn-premium" class="sidebar-link flex items-center justify-between px-4 py-2.5 w-full text-sm font-medium rounded-lg text-violet-600 transition-colors text-left group">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-rocket text-lg opacity-70 group-hover:scale-110 transition-transform"></i> <span class="translate-key" data-key="premium">Premium Service</span>
+                        </div>
+                        <span class="text-[10px] bg-violet-100 text-violet-600 px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap group-hover:bg-violet-600 group-hover:text-white transition-all">COM</span>
+                    </button>
+                </nav>
+            </div>
+            <div class="mt-auto p-6 space-y-6 text-left">
+                <div class="space-y-0.5 border-t border-slate-100 pt-4 text-sm text-slate-600">
+                    <button onclick="showPage('api')" id="btn-api" class="translate-key block w-full px-4 py-2 hover:text-pink-600 transition-colors text-left" data-key="api">API</button>
+                    <button onclick="showPage('faq')" id="btn-faq" class="translate-key block w-full px-4 py-2 hover:text-emerald-600 transition-colors text-left" data-key="faq">FAQ</button>
+                    <button onclick="showPage('privacy')" id="btn-privacy" class="translate-key block w-full px-4 py-2 hover:text-blue-600 transition-colors text-left" data-key="privacy">Privacy</button>
+                    <button onclick="showPage('feedback')" id="btn-feedback" class="translate-key block w-full px-4 py-2 hover:text-orange-600 transition-colors text-left" data-key="feedback">Feedback</button>
+                    <button onclick="showPage('contacts')" id="btn-contacts" class="translate-key block w-full px-4 py-2 hover:text-rose-600 transition-colors text-left" data-key="contacts">Contacts</button>
+                    <button onclick="showPage('more')" id="btn-more" class="block w-full px-4 py-2 text-indigo-600 font-bold hover:underline text-left">More</button>
+                </div>
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-700/50">
+                    <div id="storage-usage-text" class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-2">0 B / 100 MB</div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                        <div id="storage-progress-bar" class="bg-indigo-600 h-full w-0 rounded-full transition-all duration-500"></div>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 font-medium">© F Mail</p>
+            </div>
+        </aside>
+
+        <div id="sidebar-backdrop" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
+
+        <main class="flex-1 lg:ml-64 flex flex-col min-h-screen w-full transition-all duration-300">
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40">
+                <div class="flex items-center gap-2 lg:gap-3">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-lg">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div onclick="copyAddress()" class="group flex items-center gap-2 lg:gap-3 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-3 lg:px-5 py-2.5 rounded-2xl cursor-pointer hover:border-indigo-100 dark:hover:border-indigo-500/30 hover:shadow-sm transition-all">
+                        <div class="p-1.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-500 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/20 group-hover:border-indigo-200 dark:group-hover:border-indigo-500/30 transition-colors">
+                            <i id="copy-status-icon" class="fas fa-envelope"></i>
+                        </div>
+                        <span id="current-address" class="text-xs lg:text-sm font-semibold text-slate-600 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors h-5 flex items-center truncate max-w-[120px] sm:max-w-none"></span>
+                        <i id="header-copy-icon" class="fas fa-copy text-slate-300 dark:text-slate-500 text-[10px] lg:text-xs group-hover:text-indigo-400 transition-colors"></i>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-0.5 lg:gap-1 px-1 lg:px-2 border-r border-slate-200 mr-1 lg:mr-2 text-slate-400">
+                        <button onclick="showWarningModal()" class="p-1.5 lg:p-2 text-amber-500 hover:text-amber-600 transition-colors" title="Warning"><i class="fas fa-exclamation-circle text-base lg:text-lg"></i></button>
+                        <button onclick="toggleDarkMode()" class="p-1.5 lg:p-2 hover:text-slate-600 transition-colors" title="Toggle Dark Mode"><i class="fas fa-moon text-base lg:text-lg" id="dark-mode-icon"></i></button>
+                        <div class="relative inline-block z-[60]">
+                            <button id="lang-btn" onclick="toggleLanguageMenu(event)" class="p-1.5 lg:p-2 hover:text-slate-600 transition-colors" title="Language"><i class="fas fa-language text-base lg:text-lg"></i></button>
+                            <div id="language-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 z-[100] py-1 overflow-y-auto max-h-80 custom-scrollbar text-left text-slate-900"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 lg:gap-2 relative">
+                        <button onclick="toggleAccountMenu(event)" id="user-avatar" class="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-[10px] lg:text-xs border border-slate-200 uppercase hover:border-indigo-300 transition-colors">G</button>
+                        <button onclick="logout()" class="p-1.5 lg:p-2 text-slate-400 hover:text-red-500 transition-colors" title="Logout"><i class="fas fa-sign-out-alt text-base lg:text-lg"></i></button>
+                        <div id="account-menu" class="hidden absolute right-0 top-10 w-72 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 z-50 p-5 overflow-hidden text-left text-slate-900">
+                            <div class="space-y-4">
+                                <div class="space-y-1">
+                                    <p class="text-[13px] font-semibold text-slate-700 leading-tight translate-key" data-key="signed_in_as">You are signed in as:</p>
+                                    <p id="menu-address" class="text-[13px] font-bold text-slate-900 break-all leading-snug"></p>
+                                    <p class="text-[13px] font-semibold text-slate-700 mt-2 cursor-pointer group/pass flex items-center justify-between" onclick="togglePasswordReveal()">
+                                        <span>
+                                            <span class="translate-key" data-key="password_label">Password:</span> 
+                                            <span id="menu-password-masked" class="font-bold text-indigo-600 ml-1 tracking-wider">••••••••••••</span>
+                                        </span>
+                                        <i id="pass-eye-icon" class="fas fa-eye text-slate-300 group-hover/pass:text-indigo-400 transition-colors text-[10px]"></i>
+                                    </p>
+                                </div>
+                                <div class="h-[1px] bg-slate-100 dark:bg-slate-700/50 -mx-5"></div>
+                                <div id="sidebar-stats" class="px-1 py-3 space-y-3">
+                                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Session Stats</p>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="bg-slate-50 dark:bg-slate-700/30 p-2 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase">Received</p>
+                                            <p id="stats-received" class="text-sm font-black text-indigo-600 dark:text-indigo-400">0</p>
+                                        </div>
+                                        <div class="bg-slate-50 dark:bg-slate-700/30 p-2 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase">Keys</p>
+                                            <p id="stats-keys" class="text-sm font-black text-emerald-600 dark:text-emerald-400">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="h-[1px] bg-slate-100 dark:bg-slate-700/50 -mx-5"></div>
+                                <div class="space-y-1 pt-1">
+                                    <button onclick="showCreateAccountModal()" class="w-full flex items-center gap-3 px-1 py-2 text-[14px] font-medium text-[#6366f1] hover:text-[#4f46e5] transition-colors text-left group">
+                                        <i class="far fa-user text-[16px] opacity-70 group-hover:opacity-100"></i>
+                                        <span class="translate-key" data-key="create_acc">Create an account</span>
+                                    </button>
+                                    <button onclick="showLoginModal()" class="w-full flex items-center gap-3 px-1 py-2 text-[14px] font-medium text-[#3b82f6] hover:text-[#2563eb] transition-colors text-left group">
+                                        <i class="fas fa-sign-in-alt text-[16px] opacity-70 group-hover:opacity-100"></i>
+                                        <span class="translate-key" data-key="login">Login</span>
+                                    </button>
+                                    <button onclick="showDeleteModal()" class="w-full flex items-center gap-3 px-1 py-2 text-[14px] font-medium text-[#ef4444] hover:text-[#dc2626] transition-colors text-left group">
+                                        <i class="far fa-trash-alt text-[16px] opacity-70 group-hover:opacity-100"></i>
+                                        <span class="translate-key" data-key="delete_acc">Delete account</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div id="content" class="flex-1 overflow-y-auto custom-scrollbar">
+                <!-- More Page -->
+            <section id="page-more" class="page-section hidden p-4 lg:p-8 w-full space-y-8 text-left text-slate-900 dark:text-white page-transition">
+                <div class="max-w-6xl mx-auto space-y-8">
+                    <!-- Hero Section for More Page -->
+                    <div class="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[2.5rem] p-8 lg:p-12 text-white shadow-xl shadow-indigo-200 dark:shadow-none relative overflow-hidden">
+                        <div class="relative z-10 space-y-4">
+                            <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white mb-6">
+                                <i class="fas fa-shapes text-3xl"></i>
+                            </div>
+                            <h2 class="text-4xl font-black italic">Extended Resources</h2>
+                            <p class="text-indigo-50 text-lg max-w-2xl font-medium">Discover additional tools, social communities, and helpful links curated by the F Mail team to enhance your digital workflow.</p>
+                        </div>
+                        <i class="fas fa-link absolute -bottom-10 -right-10 text-[15rem] text-white/10 rotate-12"></i>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 p-8 lg:p-12 shadow-sm">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-600">
+                                    <i class="fas fa-external-link-alt text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">External Links</h3>
+                                    <p class="text-slate-400 text-sm font-medium">Quick access to our official channels</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Search Bar -->
+                            <div class="relative flex-1 max-w-md">
+                                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="resource-search" onkeyup="filterResources()" placeholder="Search resources..." class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm">
+                            </div>
+                        </div>
+
+                        <div id="more-links-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[200px]">
+                            <!-- Links will be injected here -->
+                            <div class="col-span-full py-12 text-center loader-placeholder">
+                                <i class="fas fa-spinner fa-spin text-3xl text-indigo-600 mb-4"></i>
+                                <p class="text-slate-400 font-medium italic">Loading resources...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+                <!-- Super Services Page -->
+                <section id="page-super" class="page-section hidden p-4 lg:p-8 w-full space-y-8 text-left text-slate-900 dark:text-white page-transition">
+                    <div class="max-w-6xl mx-auto space-y-8">
+                        <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-[2.5rem] p-8 lg:p-12 text-white shadow-xl shadow-amber-200 dark:shadow-none relative overflow-hidden">
+                            <div class="relative z-10 space-y-4">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white mb-6">
+                                    <i class="fas fa-crown text-3xl"></i>
+                                </div>
+                                <h2 class="text-4xl font-black">Super Services</h2>
+                                <p class="text-amber-50 text-lg max-w-2xl font-medium">Unlock the full potential of F Mail with our exclusive high-performance tools. Managed directly by administrators for maximum reliability.</p>
+                            </div>
+                            <i class="fas fa-gem absolute -bottom-10 -right-10 text-[15rem] text-white/10 rotate-12"></i>
+                        </div>
+
+                        <div id="super-links-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Super services will be injected here -->
+                            <div class="col-span-full py-20 text-center loader-placeholder">
+                                <i class="fas fa-spinner fa-spin text-4xl text-amber-500 mb-4"></i>
+                                <p class="text-slate-400 font-bold italic">Initializing super services...</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inbox Page -->
+                <div id="page-inbox" class="page-transition active">
+                    <div id="hero" class="py-12 px-8 text-center bg-white dark:bg-slate-900 transition-colors fade-in-up">
+                        <div class="max-w-4xl mx-auto space-y-6 text-center">
+                            <div class="flex justify-center mb-2 hover-scale">
+                                <div class="relative w-64 h-48">
+                                    <!-- High Fidelity SVG Illustration matching the reference image -->
+                                    <svg viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                                        <!-- Soft background blob -->
+                                        <path d="M220 100C220 150 180 170 120 170C60 170 20 150 20 100C20 50 60 20 120 20C180 20 220 50 220 100Z" fill="#F1F5F9" class="dark:fill-slate-800/50"/>
+                                        
+                                        <!-- Envelope Shadow -->
+                                        <path d="M40 150L200 150" stroke="#E2E8F0" stroke-width="8" stroke-linecap="round" class="dark:stroke-slate-700"/>
+
+                                        <!-- Paper coming out -->
+                                        <g transform="translate(0, -15)">
+                                            <rect x="60" y="40" width="120" height="90" rx="4" fill="white" stroke="#E2E8F0" stroke-width="1" class="dark:fill-slate-700 dark:stroke-slate-600"/>
+                                            <rect x="75" y="60" width="90" height="4" rx="2" fill="#F1F5F9" class="dark:fill-slate-600"/>
+                                            <rect x="75" y="75" width="70" height="4" rx="2" fill="#F1F5F9" class="dark:fill-slate-600"/>
+                                            <rect x="75" y="90" width="80" height="4" rx="2" fill="#F1F5F9" class="dark:fill-slate-600"/>
+                                        </g>
+
+                                        <!-- Envelope Body -->
+                                        <path d="M40 150V70C40 64.4772 44.4772 60 50 60H190C195.523 60 200 64.4772 200 70V150C200 155.523 195.523 160 190 160H50C44.4772 160 40 155.523 40 150Z" fill="#E2E8F0" class="dark:fill-slate-800"/>
+                                        
+                                        <!-- Envelope Front Flap -->
+                                        <path d="M40 70L120 120L200 70" stroke="#6366F1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                        
+                                        <!-- Purple Floating Content from reference -->
+                                        <rect x="130" y="70" width="50" height="40" rx="4" fill="#6366F1" opacity="0.9" transform="rotate(-5 130 70)"/>
+                                        
+                                        <!-- Decorative Plant Leaves -->
+                                        <g transform="translate(50, 130)">
+                                            <path d="M0 0C-5 -10 -15 -12 -20 -8C-25 -4 -22 5 -15 8" fill="#818CF8" opacity="0.6"/>
+                                            <path d="M5 -5C8 -15 18 -18 22 -12C26 -6 20 5 15 10" fill="#818CF8" opacity="0.4"/>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight translate-key" data-key="hero_title">F Mail</h2>
+                                <p id="hero-desc-text" class="text-slate-500 dark:text-slate-400 text-[14px] leading-relaxed max-w-xl mx-auto font-medium translate-key" data-key="hero_desc">Protect your personal email address from spam, bots, phishing, and other online abuse with our free temporary disposable anonymous email service. No commitments, no risks—just secure, instant access to a temp email address.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="inbox-container" class="px-4 lg:px-8 pb-16 w-full">
+                        <div id="messages-list" class="hidden space-y-6 text-left">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight translate-key" data-key="inbox">Inbox</h3>
+                <div class="flex items-center gap-3">
+                    <div id="bulk-actions" class="hidden animate-fade-in flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-xl">
+                        <span id="selected-count" class="text-xs font-bold text-red-600 dark:text-red-400">0 selected</span>
+                        <button onclick="deleteSelectedMessages()" class="p-1.5 text-red-600 hover:bg-red-100 dark:hover:bg-red-500/20 rounded-lg transition-colors" title="Delete Selected">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <button onclick="refreshMessages()" class="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1.5 transition-all active:scale-95">
+                        <i id="refresh-spin" class="fas fa-rotate"></i> <span class="translate-key" data-key="refresh">Refresh</span>
+                    </button>
+                </div>
+            </div>
+                            <!-- Auto Refresh Feature -->
+                            <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-700 w-fit">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="auto-refresh-toggle" class="sr-only peer" onchange="toggleAutoRefresh()">
+                                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                    <span class="ml-3 text-[14px] font-bold text-slate-700 dark:text-slate-300">Auto Refresh</span>
+                                </label>
+                                <div id="refresh-timer" class="hidden text-[12px] font-black text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 rounded-xl tabular-nums shadow-sm border border-indigo-100 dark:border-indigo-500/20">15s</div>
+                            </div>
+                            <div id="messages-grid" class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm divide-y divide-slate-50 dark:divide-slate-700 text-slate-900 dark:text-white">
+                                <!-- Skeleton Loaders -->
+                                <div id="messages-skeleton" class="hidden divide-y divide-slate-50 dark:divide-slate-700">
+                                    <?php for($i=0; $i<5; $i++): ?>
+                                    <div class="p-6 flex items-center gap-6 animate-fade-in">
+                                        <div class="w-14 h-14 rounded-full skeleton shrink-0"></div>
+                                        <div class="flex-1 space-y-3">
+                                            <div class="flex justify-between">
+                                                <div class="h-4 w-32 skeleton rounded-md"></div>
+                                                <div class="h-3 w-16 skeleton rounded-md"></div>
+                                            </div>
+                                            <div class="h-4 w-3/4 skeleton rounded-md"></div>
+                                            <div class="h-3 w-1/2 skeleton rounded-md"></div>
+                                        </div>
+                                    </div>
+                                    <?php endfor; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-admin" class="hidden p-4 lg:p-8 w-full space-y-8 text-left page-transition">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">Admin Dashboard</h2>
+                        <button onclick="refreshAdminStats()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all">
+                            <i class="fas fa-rotate" id="admin-sync-icon"></i> Refresh Data
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total Accounts</p>
+                            <h3 id="admin-total-accounts" class="text-3xl font-black text-slate-900 dark:text-white">0</h3>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total API Keys</p>
+                            <h3 id="admin-total-keys" class="text-3xl font-black text-indigo-600">0</h3>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Active Keys</p>
+                            <h3 id="admin-active-keys" class="text-3xl font-black text-green-500">0</h3>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Status</p>
+                            <h3 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span> Online
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-3 space-y-4">
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white">Activity Log</h4>
+                            <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead class="bg-slate-50 dark:bg-slate-700/50">
+                                        <tr>
+                                            <th class="px-6 py-4 text-[11px] font-bold uppercase text-slate-400 tracking-wider">Time</th>
+                                            <th class="px-6 py-4 text-[11px] font-bold uppercase text-slate-400 tracking-wider">Action</th>
+                                            <th class="px-6 py-4 text-[11px] font-bold uppercase text-slate-400 tracking-wider">Details</th>
+                                            <th class="px-6 py-4 text-[11px] font-bold uppercase text-slate-400 tracking-wider">IP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-activity-table" class="divide-y dark:divide-slate-700 text-sm"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-1 space-y-4">
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white">Recent Signups</h4>
+                            <div id="admin-recent-list" class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden divide-y dark:divide-slate-700"></div>
+                        </div>
+                        <div class="lg:col-span-2 space-y-4">
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white">Account Management</h4>
+                            <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead class="bg-slate-50 dark:bg-slate-700/50">
+                                        <tr>
+                                            <th class="px-6 py-4 text-[11px] font-bold uppercase text-slate-400 tracking-wider">Address</th>
+                                            <th class="px-6 py-4 text-[11px] font-bold uppercase text-slate-400 tracking-wider">Created</th>
+                                            <th class="px-6 py-4 text-[11px] font-bold uppercase text-slate-400 tracking-wider text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-accounts-table" class="divide-y dark:divide-slate-700"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-3 space-y-4">
+                            <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-xl font-bold text-slate-900 dark:text-white">Manage More Resources</h4>
+                                    <button onclick="addLinkRow()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all flex items-center gap-2">
+                                        <i class="fas fa-plus"></i> Add Link
+                                    </button>
+                                </div>
+                                <div id="admin-links-editor" class="space-y-4">
+                                    <!-- Link rows injected here -->
+                                </div>
+                                <div class="pt-6 border-t border-slate-100 dark:border-slate-700">
+                                    <button onclick="saveAdminLinks()" id="btn-save-links" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2">
+                                        <i class="fas fa-save"></i> Save All Resources
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-api" class="hidden p-4 lg:p-8 w-full space-y-8 text-left text-slate-900 dark:text-white page-transition">
+                    <div class="flex items-center justify-between p-8 bg-pink-50 dark:bg-pink-500/10 rounded-[2.5rem] border border-pink-100 dark:border-pink-500/20">
+                        <div>
+                            <h2 class="text-3xl font-extrabold text-pink-600 dark:text-pink-400 translate-key" data-key="api">Mail Services</h2>
+                            <p class="text-pink-500/60 text-sm font-medium mt-1">Connect and automate your temporary mail workflow</p>
+                        </div>
+                        <span class="px-3 py-1 bg-pink-100 dark:bg-pink-500/20 text-pink-600 dark:text-pink-400 text-xs font-bold rounded-full uppercase tracking-wider">API Enabled</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors text-left text-slate-900 dark:text-white">
+                        <p class="text-slate-600 dark:text-slate-400 mb-6 translate-key" data-key="api_desc"></p>
+                        <div id="api-no-account">
+                            <button onclick="createNewAccount()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-all">Create Account to Start</button>
+                        </div>
+                        <div id="api-has-account" class="hidden space-y-6">
+                            <div class="flex items-center justify-between p-4 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl border border-indigo-100 dark:border-indigo-900/30">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-bold uppercase text-indigo-400">Endpoint URL</span>
+                                    <code class="text-xs font-mono text-indigo-600 dark:text-indigo-300 break-all" id="api-endpoint-display"></code>
+                                </div>
+                                <button onclick="copyToClipboard(document.getElementById('api-endpoint-display').innerText)" class="p-2 text-indigo-400 hover:text-indigo-600 transition-colors">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            <button onclick="generateOwnKey()" id="api-gen-btn" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-all translate-key" data-key="gen_api_btn"></button>
+                        </div>
+                        <div id="api-keys-list" class="mt-8"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <h4 class="font-bold mb-3 flex items-center gap-2 text-slate-900 dark:text-white"><i class="fas fa-code text-indigo-500"></i> Request Header</h4>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl font-mono text-xs text-slate-600 dark:text-slate-400">X-API-Key: YOUR_GENERATED_KEY</div>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <h4 class="font-bold mb-3 flex items-center gap-2 text-slate-900 dark:text-white"><i class="fas fa-terminal text-indigo-500"></i> Sample CURL</h4>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl font-mono text-xs text-slate-600 dark:text-slate-400 overflow-x-auto whitespace-nowrap">curl -H "X-API-Key: key" [URL]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-faq" class="hidden p-4 lg:p-8 w-full space-y-8 text-left text-slate-900 dark:text-white page-transition">
+                    <div class="p-8 bg-emerald-50 dark:bg-emerald-500/10 rounded-[2.5rem] border border-emerald-100 dark:border-emerald-500/20">
+                        <h2 class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 translate-key" data-key="faq">FAQ</h2>
+                        <p class="text-emerald-500/60 text-sm font-medium mt-1">Frequently asked questions and support</p>
+                    </div>
+                    <div id="faq-list" class="grid grid-cols-1 gap-4"></div>
+                </div>
+
+                <div id="page-privacy" class="hidden p-4 lg:p-8 w-full space-y-8 text-left text-slate-900 dark:text-white page-transition">
+                    <div class="p-8 bg-blue-50 dark:bg-blue-500/10 rounded-[2.5rem] border border-blue-100 dark:border-blue-500/20">
+                        <h2 class="text-3xl font-extrabold text-blue-600 dark:text-blue-400 translate-key" data-key="privacy">Privacy</h2>
+                        <p class="text-blue-500/60 text-sm font-medium mt-1">How we protect your temporary data</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors text-left text-slate-900 dark:text-white">
+                        <div class="prose dark:prose-invert prose-slate max-w-none text-slate-900 dark:text-slate-300">
+                            <p class="text-slate-600 dark:text-slate-400 translate-key" data-key="privacy_desc"></p>
+                            <h4 class="font-bold mt-6 mb-2 text-slate-900 dark:text-white">1. Data Collection</h4>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm">We at F Mail do not collect any personal information. Emails are temporary and automatically deleted after a few hours.</p>
+                            <h4 class="font-bold mt-6 mb-2 text-slate-900 dark:text-white">2. Cookies</h4>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm">F Mail uses local storage only to keep your current session active and save your language preference.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-feedback" class="hidden p-4 lg:p-8 w-full space-y-8 text-left text-slate-900 dark:text-white page-transition">
+                    <div class="p-8 bg-orange-50 dark:bg-orange-500/10 rounded-[2.5rem] border border-orange-100 dark:border-orange-500/20">
+                        <h2 class="text-3xl font-extrabold text-orange-600 dark:text-orange-400 translate-key" data-key="feedback">Feedback</h2>
+                        <p class="text-orange-500/60 text-sm font-medium mt-1">Share your thoughts to help us improve</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors text-slate-900 dark:text-white text-left">
+                        <textarea id="feedback-textarea" class="w-full h-32 p-4 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white" placeholder="Feedback..."></textarea>
+                        <button onclick="submitFeedback()" class="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-all translate-key" data-key="submit_feedback">Submit</button>
+                    </div>
+                </div>
+
+                <div id="page-contacts" class="hidden p-4 lg:p-8 w-full space-y-8 text-left text-slate-900 dark:text-white page-transition">
+                    <div class="p-8 bg-rose-50 dark:bg-rose-500/10 rounded-[2.5rem] border border-rose-100 dark:border-rose-500/20">
+                        <h2 class="text-3xl font-extrabold text-rose-600 dark:text-rose-400 translate-key" data-key="contacts">Contacts</h2>
+                        <p class="text-rose-500/60 text-sm font-medium mt-1">Get in touch with our official support</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors text-left text-slate-900 dark:text-white">
+                        <div class="space-y-6 text-slate-900 dark:text-white">
+                            <div class="flex items-center gap-4 text-slate-600 dark:text-slate-400">
+                                <div class="w-10 h-10 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-500"><i class="fas fa-envelope text-lg"></i></div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Email</span>
+                                    <span class="text-slate-900 dark:text-white font-medium">support@fmail.com</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 text-slate-600 dark:text-slate-400">
+                                <div class="w-10 h-10 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-500"><i class="fab fa-telegram text-lg"></i></div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Telegram</span>
+                                    <span class="text-slate-900 dark:text-white font-medium">@fmail_official</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-premium" class="hidden p-4 lg:p-8 w-full space-y-8 text-left text-slate-900 dark:text-white page-transition relative min-h-[400px]">
+                    <!-- Coming Soon Overlay -->
+                    <div class="absolute inset-0 z-20 bg-white/60 dark:bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center rounded-[2.5rem]">
+                        <div class="bg-white dark:bg-slate-800 p-8 rounded-[2rem] shadow-2xl border border-slate-100 dark:border-slate-700 text-center space-y-4 max-w-sm mx-auto transform -translate-y-12">
+                            <div class="w-20 h-20 bg-indigo-50 dark:bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <i class="fas fa-rocket text-3xl text-indigo-600 animate-bounce"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Coming Soon</h3>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">We are currently fine-tuning our premium infrastructure to provide the best experience possible.</p>
+                            <div class="flex items-center justify-center gap-2 pt-4">
+                                <span class="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></span>
+                                <span class="w-2 h-2 bg-indigo-600 rounded-full animate-pulse [animation-delay:0.2s]"></span>
+                                <span class="w-2 h-2 bg-indigo-600 rounded-full animate-pulse [animation-delay:0.4s]"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between blur-[2px]">
+                        <h2 class="text-3xl font-extrabold translate-key" data-key="premium">Premium Service</h2>
+                        <span class="px-3 py-1 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold rounded-full uppercase tracking-wider">Active</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Clean Inbox Tool -->
+                        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-red-50 dark:bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500">
+                                    <i class="fas fa-broom text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 dark:text-white">Clean Inbox</h4>
+                                    <p class="text-xs text-slate-400">Permanently delete all messages in your inbox.</p>
+                                </div>
+                            </div>
+                            <button onclick="premiumDeleteAllMessages()" id="btn-premium-delete-all" class="w-full py-4 border-2 border-red-100 dark:border-red-900/30 text-red-500 font-bold rounded-2xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-trash-alt"></i> Delete All Messages
+                            </button>
+                        </div>
+
+                        <!-- Account Backup Tool -->
+                        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500">
+                                    <i class="fas fa-cloud-download-alt text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 dark:text-white">Account Backup</h4>
+                                    <p class="text-xs text-slate-400">Download your account address and password for later use.</p>
+                                </div>
+                            </div>
+                            <button onclick="premiumBackupAccount()" class="w-full py-4 border-2 border-emerald-100 dark:border-emerald-900/30 text-emerald-500 font-bold rounded-2xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-download"></i> Backup Credentials
+                            </button>
+                        </div>
+
+                        <!-- Bulk Export Tool -->
+                        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-600">
+                                    <i class="fas fa-file-export text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 dark:text-white">Export Data</h4>
+                                    <p class="text-xs text-slate-400">Export all messages from your inbox as a JSON file.</p>
+                                </div>
+                            </div>
+                            <button onclick="exportInbox()" class="w-full py-4 border-2 border-indigo-100 dark:border-indigo-900/30 text-indigo-600 font-bold rounded-2xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-download"></i> Export Messages
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+            <div id="message-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 text-slate-900">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-5xl max-h-[90vh] rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden text-left transition-colors text-slate-900 dark:text-white">
+            <div class="p-8 border-b border-slate-100 dark:border-slate-700 flex justify-between items-start text-slate-900 dark:text-white">
+                <div class="text-left text-slate-900 dark:text-white flex-1 pr-8">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div id="modal-avatar" class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-lg uppercase"></div>
+                        <div>
+                            <h2 id="modal-subject" class="text-2xl font-black tracking-tight leading-tight"></h2>
+                            <div id="modal-meta" class="text-sm text-slate-500 dark:text-slate-400 font-medium"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="modal-delete-btn" class="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all" title="Delete Message">
+                        <i class="fas fa-trash-alt text-lg"></i>
+                    </button>
+                    <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all text-2xl shrink-0">&times;</button>
+                </div>
+            </div>
+            <div class="bg-slate-50/50 dark:bg-slate-900/30 px-10 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button class="text-xs font-bold text-slate-400 hover:text-indigo-600 transition-colors flex items-center gap-1">
+                        <i class="fas fa-reply"></i> Reply
+                    </button>
+                    <button class="text-xs font-bold text-slate-400 hover:text-indigo-600 transition-colors flex items-center gap-1">
+                        <i class="fas fa-forward"></i> Forward
+                    </button>
+                </div>
+                <div id="modal-date" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider"></div>
+            </div>
+            <div id="modal-body" class="p-10 overflow-y-auto flex-1 text-left prose prose-slate dark:prose-invert max-w-none text-slate-900 dark:text-slate-200 transition-colors custom-scrollbar"></div>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-xl shadow-2xl p-6 text-left transition-colors text-slate-900">
+            <h3 class="text-lg font-bold translate-key" data-key="delete_acc">Delete account</h3>
+            <p class="text-sm text-slate-500 mt-2 translate-key" data-key="delete_confirm_desc">Are you sure?</p>
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="hideDeleteModal()" class="px-4 py-2 text-sm font-semibold translate-key" data-key="cancel">Cancel</button>
+                <button onclick="confirmDelete()" class="px-6 py-2 text-sm font-bold text-white bg-red-600 rounded-lg">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="create-account-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-[2rem] shadow-2xl p-8 text-center transition-all animate-in fade-in zoom-in duration-200">
+            <div class="w-16 h-16 bg-indigo-50 dark:bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-user-plus text-2xl text-indigo-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Create an account</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mb-8">
+                Here you can create a new account for this you need to select a username, then domain and password!
+            </p>
+            
+            <div class="space-y-6 text-left">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase ml-1">Email</label>
+                    <div class="flex items-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 transition-all">
+                        <div class="pl-5 pr-3 text-slate-400">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <input type="text" id="custom-username" class="flex-1 py-4 bg-transparent outline-none text-sm text-slate-900 dark:text-white" placeholder="Username">
+                        <select id="custom-domain" class="bg-slate-100 dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 px-4 py-4 text-sm font-bold text-slate-600 dark:text-slate-300 outline-none cursor-pointer min-w-[160px]">
+                            <!-- Domains populated via JS -->
+                        </select>
+                    </div>
+                    <p id="username-error" class="hidden text-xs text-red-500 ml-1">Required</p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase ml-1">Password</label>
+                    <div class="flex items-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 transition-all">
+                        <div class="pl-5 pr-3 text-slate-400">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <input type="password" id="custom-password" class="flex-1 py-4 bg-transparent outline-none text-sm text-slate-900 dark:text-white" placeholder="Password">
+                        <button onclick="toggleCustomPasswordReveal()" class="px-5 text-slate-400 hover:text-indigo-500 transition-colors">
+                            <i id="custom-pass-eye" class="fas fa-eye-slash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-10">
+                <button onclick="hideCreateAccountModal()" class="py-4 border-2 border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-bold rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                    Cancel
+                </button>
+                <button onclick="performCustomCreate()" class="py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none transition-all">
+                    Create
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4 text-slate-900">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 text-left transition-colors text-slate-900">
+            <h2 class="text-2xl font-bold mb-6 translate-key" data-key="login">Login</h2>
+            <div class="space-y-4">
+                <input type="email" id="login-email" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none" placeholder="Email">
+                <input type="password" id="login-password" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none" placeholder="Password">
+                <button onclick="performLogin()" id="login-btn" class="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl translate-key" data-key="login">Login</button>
+                <button onclick="hideLoginModal()" class="w-full py-2 text-sm text-slate-500 translate-key" data-key="cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="warning-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[130] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-2xl shadow-2xl p-8 text-center transition-all animate-in fade-in zoom-in duration-200">
+            <div class="w-16 h-16 bg-amber-100 dark:bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-exclamation-circle text-2xl text-amber-500"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Warning!</h3>
+            <p class="text-slate-500 dark:text-slate-400 leading-relaxed mb-8">
+                Keep in mind that all accounts have a password attached to them. Please, kindly take a note of your password, it's under the account dropdown (the letter icon next to the logout button). There is no way to reset your password.
+            </p>
+            <button onclick="hideWarningModal()" class="w-full py-3.5 border-2 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white font-bold rounded-xl transition-all uppercase tracking-wide">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                inbox: "Inbox", refresh: "Refresh", premium: "Premium Service", support: "Support us by disabling ad blockers on our site ",
+                api: "API", faq: "FAQ", privacy: "Privacy", feedback: "Feedback", contacts: "Contacts",
+                hero_title: "F Mail", hero_desc: "Protect your personal email address from spam, bots, phishing, and other online abuse with our free temporary disposable anonymous email service. No commitments, no risks—just secure, instant access to a temp email address.",
+                feat1_title: "Secure Temporary Email", feat1_desc: "Your temporary email address is protected by a reliable password, generated randomly in your browser, providing a barrier against unauthorized access and potential breaches.",
+                feat2_title: "Instant Disposable Email", feat2_desc: "No more wasting precious time on registrations, form filling, or solving captchas. Your temp email address is ready for use instantly, putting you in control effortlessly.",
+                feat3_title: "Fast and Anonymous Email Service", feat3_desc: "Experience fast message delivery without delays or restrictions. Our service is finely tuned for maximum delivery speed, ensuring you stay connected seamlessly.",
+                signed_in_as: "Signed in as:", password_label: "Password:", create_acc: "Create account", login: "Login", delete_acc: "Delete",
+                logout: "Logout", cancel: "Cancel", submit_feedback: "Submit", api_desc: "Connect your external applications to your temporary inbox using our secure API. Generate a key below to start fetching emails programmatically.",
+                delete_confirm_title: "Delete?", delete_confirm_desc: "Data will be lost.",
+                gen_api_btn: "Generate New Access Key", a1: "Disposable email service.",
+                privacy_desc: "We respect your privacy. No data is stored.", email_label: "Email", password_label_no_colon: "Password", feedback_placeholder: "Feedback...",
+                no_keys: "No keys found.", delete_key_confirm: "Are you sure you want to delete this API key?"
+            },
+            bn: {
+                inbox: "ইনবক্স", refresh: "রিফ্রেশ", premium: "Premium Service", support: "আমাদের সাইটে অ্যাড ব্লকার বন্ধ করে সহায়তা করুন 🙏",
+                api: "এপিআই", faq: "প্রশ্নোত্তর", privacy: "গোপনীয়তা", feedback: "মতামত", contacts: "যোগাযোগ",
+                hero_title: "এফ মেইল", hero_desc: "আপনার ব্যক্তিগত ইমেল ঠিকানা স্প্যাম, বট, ফিশিং এবং অন্যান্য অনলাইন অপব্যবহার থেকে রক্ষা করুন আমাদের বিনামূল্যে অস্থায়ী ডিসপোজেবল বেনামী ইমেল পরিষেবার মাধ্যমে। কোনো প্রতিশ্রুতি নেই, কোনো ঝুঁকি নেই—শুধু নিরাপদ, তাৎক্ষণিক অ্যাক্সেস একটি অস্থায়ী ইমেল ঠিকানায়।",
+                feat1_title: "নিরাপদ অস্থায়ী ইমেল", feat1_desc: "আপনার অস্থায়ী ইমেল ঠিকানা একটি নির্ভরযোগ্য পাসওয়ার্ড দ্বারা সুরক্ষিত, যা আপনার ব্রাউজারে এলোমেলোভাবে তৈরি হয়, যা অননুমোদিত অ্যাক্সেস এবং সম্ভাব্য লঙ্ঘনের বিরুদ্ধে একটি বাধা প্রদান করে।",
+                feat2_title: "তাৎক্ষণিক ডিসপোজেবল ইমেল", feat2_desc: "রেজিস্ট্রেশন, ফর্ম পূরণ বা ক্যাপচা সমাধানে আর মূল্যবান সময় নষ্ট করবেন না। আপনার অস্থায়ী ইমেল ঠিকানা তাৎক্ষণিকভাবে ব্যবহারের জন্য প্রস্তুত, যা আপনাকে অনায়াসে নিয়ন্ত্রণে রাখে।",
+                feat3_title: "দ্রুত এবং বেনামী ইমেল পরিষেবা", feat3_desc: "বিলম্ব বা সীমাবদ্ধতা ছাড়াই দ্রুত বার্তা বিতরণের অভিজ্ঞতা নিন। আমাদের পরিষেবা সর্বাধিক বিতরণের গতির জন্য সূক্ষ্মভাবে টিউন করা হয়েছে, যাতে আপনি নির্বিঘ্নে সংযুক্ত থাকেন।",
+                signed_in_as: "লগ-ইন আছেন:", password_label: "পাসওয়ার্ড:", create_acc: "অ্যাকাউন্ট তৈরি", login: "লগইন", delete_acc: "ডিলিট",
+                logout: "লগআউট", cancel: "বাতিল", submit_feedback: "পাঠান", api_desc: "আমাদের নিরাপদ এপিআই ব্যবহার করে আপনার বাহ্যিক অ্যাপ্লিকেশনগুলিকে আপনার অস্থায়ী ইনবক্সের সাথে সংযুক্ত করুন। প্রোগ্রাম্যাটিকভাবে ইমেল আনা শুরু করতে নিচে একটি কী তৈরি করুন।",
+                delete_confirm_title: "ডিলিট করবেন?", delete_confirm_desc: "সব ডাটা হারিয়ে যাবে।",
+                gen_api_btn: "নতুন অ্যাক্সেস কী তৈরি করুন", a1: "ডিসপোজেবল ইমেল সার্ভিস।",
+                privacy_desc: "আমরা আপনার গোপনীয়তাকে সম্মান করি। কোনো ডাটা সংরক্ষণ করা হয় না।", email_label: "ইমেল", password_label_no_colon: "পাসওয়ার্ড", feedback_placeholder: "মতামত...",
+                no_keys: "কোনো কী পাওয়া যায়নি।", delete_key_confirm: "আপনি কি নিশ্চিত যে আপনি এই এপিআই কীটি ডিলিট করতে চান?"
+            }
+        };
+
+        const languages = [
+            { code: 'en', name: 'English' }, { code: 'bn', name: 'Bengali (বাংলা)' }, { code: 'hi', name: 'Hindi (हिन्दी)' }, { code: 'de', name: 'Deutsch' }, { code: 'es', name: 'Español' }, { code: 'fr', name: 'Français' }, { code: 'it', name: 'Italiano' }, { code: 'pl', name: 'Polski' }, { code: 'pt', name: 'Português' }, { code: 'ru', name: 'Русский' }, { code: 'tr', name: 'Türkçe' }, { code: 'zh', name: '中文' }, { code: 'ja', name: '日本語' }, { code: 'ko', name: '한국어' }, { code: 'ar', name: 'العربية' }, { code: 'nl', name: 'Nederlands' }, { code: 'sv', name: 'Svenska' }, { code: 'da', name: 'Dansk' }, { code: 'no', name: 'Norsk' }, { code: 'fi', name: 'Suomi' }, { code: 'cs', name: 'Čeština' }, { code: 'el', name: 'Ελληνিকা' }, { code: 'hu', name: 'Magyar' }, { code: 'ro', name: 'Română' }, { code: 'sk', name: 'Slovenčina' }, { code: 'uk', name: 'Українська' }, { code: 'vi', name: 'Tiếng Việt' }, { code: 'th', name: 'ไทย' }, { code: 'id', name: 'Bahasa Indonesia' }, { code: 'ms', name: 'Bahasa Melayu' }
+        ];
+
+        // Notification Sound
+        const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+        // lastMessageCount is now declared further down with persistence logic
+
+        const faqs = [
+            { q: "What is F Mail?", a: "F Mail is a disposable email service that provides temporary addresses that self-destruct after a few hours, keeping your primary inbox clean." },
+            { q: "Why use F Mail?", a: "To avoid spam, protect your privacy, and bypass forced registrations without using your personal email." },
+            { q: "Is F Mail free?", a: "Yes, our core service is completely free. We also offer Premium features for advanced users." },
+            { q: "How long are emails kept?", a: "Emails are typically kept for a few hours before being automatically purged from our system." }
+        ];
+
+        let currentLang = localStorage.getItem('mail_lang') || 'en';
+        let API_URL = localStorage.getItem('mail_api_url');
+        const PROVIDERS = [
+            { name: 'Mail.tm', url: 'https://api.mail.tm' },
+            { name: 'Mail.gw', url: 'https://api.mail.gw' }
+        ];
+
+        // If no provider set, pick one randomly
+        if (!API_URL) {
+            API_URL = PROVIDERS[Math.floor(Math.random() * PROVIDERS.length)].url;
+            localStorage.setItem('mail_api_url', API_URL);
+        }
+
+        function setProvider(url) {
+            API_URL = url;
+            localStorage.setItem('mail_api_url', url);
+            localStorage.removeItem('mail_acc');
+            localStorage.removeItem('mail_token');
+            localStorage.removeItem('mail_pass');
+            location.reload();
+        }
+        let account = JSON.parse(localStorage.getItem('mail_acc')) || null;
+        let token = localStorage.getItem('mail_token') || null;
+        let password = localStorage.getItem('mail_pass') || null;
+
+        function renderLanguageMenu() {
+            const dropdown = document.getElementById('language-dropdown');
+            dropdown.innerHTML = languages.map(lang => `<button onclick="setLanguage('${lang.code}')" class="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 transition-colors ${lang.code === 'ar' ? 'text-right' : ''}">${lang.name}</button>`).join('');
+        }
+
+        function renderFAQ() {
+            const container = document.getElementById('faq-list');
+            if (container) {
+                container.innerHTML = faqs.map(faq => `
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 transition-all hover:shadow-md text-left text-slate-900 dark:text-white">
+                        <h4 class="font-bold text-slate-900 dark:text-white mb-2">${faq.q}</h4>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">${faq.a}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function listOwnKeys() {
+            if (!account) {
+                const apiNoAccount = document.getElementById('api-no-account');
+                const apiHasAccount = document.getElementById('api-has-account');
+                if (apiNoAccount) apiNoAccount.classList.remove('hidden');
+                if (apiHasAccount) apiHasAccount.classList.add('hidden');
+                return;
+            }
+            
+            const apiNoAccount = document.getElementById('api-no-account');
+            const apiHasAccount = document.getElementById('api-has-account');
+            if (apiNoAccount) apiNoAccount.classList.add('hidden');
+            if (apiHasAccount) apiHasAccount.classList.remove('hidden');
+
+            try {
+                const res = await fetch(`api.php?action=list_keys&address=${account.address}`);
+                const keys = await res.json();
+                const container = document.getElementById('api-keys-list');
+                
+                if (container) {
+                    const statsKeys = document.getElementById('stats-keys');
+                    if (statsKeys) statsKeys.innerText = keys.length;
+
+                    const lang = translations[currentLang] || translations['en'];
+                    if (!keys || keys.length === 0) { 
+                        container.innerHTML = `<p class="mt-4 text-slate-400 text-sm translate-key" data-key="no_keys">${lang.no_keys || "No keys found."}</p>`; 
+                        return; 
+                    }
+                    container.innerHTML = '<div class="mt-6 space-y-3">' + keys.map(k => `
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex justify-between items-center transition-all hover:border-indigo-100 dark:hover:border-indigo-900/30 group">
+                            <div class="flex flex-col gap-1 min-w-0 flex-1">
+                                <code class="text-xs font-mono text-slate-600 dark:text-slate-400 truncate break-all">${k.api_key}</code>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] uppercase font-bold text-green-500 bg-green-50 dark:bg-green-500/10 px-1.5 py-0.5 rounded">${k.status}</span>
+                                    <span class="text-[10px] text-slate-400 font-medium">${new Date(k.created_at).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                            <button onclick="deleteApiKey('${k.api_key}')" class="p-2 text-slate-300 hover:text-red-500 transition-colors shrink-0"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    `).join('') + '</div>';
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        let allMoreLinks = []; // Store links for filtering
+
+        function renderMoreLinks(links) {
+            console.log("renderMoreLinks called with:", links);
+            allMoreLinks = links || []; // Cache the links
+            const linksList = document.getElementById('more-links-list');
+            if (!linksList) {
+                console.error("Element #more-links-list not found!");
+                return;
+            }
+            
+            displayLinks(allMoreLinks);
+        }
+
+        function displayLinks(links) {
+            const linksList = document.getElementById('more-links-list');
+            const dashboardLinks = document.getElementById('feature-cards');
+            // Filter only active links
+            const activeLinks = (links && Array.isArray(links)) ? links.filter(link => (link.status === undefined || link.status === 'on')) : [];
+            
+            const linkHTML = activeLinks.map(link => `
+                <a href="${link.url}" target="_blank" class="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-700/50 hover:border-indigo-500 transition-all group hover-scale shadow-sm hover:shadow-md">
+                    <div class="flex items-center gap-4">
+                        ${link.image ? `<img src="${link.image}" class="w-10 h-10 rounded-xl object-cover shadow-sm group-hover:scale-110 transition-transform" alt="${link.label}">` : `<div class="w-10 h-10 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all"><i class="fas fa-link"></i></div>`}
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-700 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">${link.label}</span>
+                            <span class="text-[10px] text-slate-400 font-medium truncate max-w-[150px]">${new URL(link.url).hostname}</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-external-link-alt text-slate-300 group-hover:text-indigo-500 transition-colors"></i>
+                </a>
+            `).join('');
+
+            if (linksList) {
+                if (activeLinks.length > 0) {
+                    linksList.innerHTML = linkHTML;
+                } else {
+                    linksList.innerHTML = `
+                        <div class="col-span-full py-12 text-center">
+                            <div class="w-16 h-16 bg-slate-50 dark:bg-slate-700/30 rounded-full flex items-center justify-center mx-auto text-slate-300 mb-4">
+                                <i class="fas fa-link-slash text-2xl"></i>
+                            </div>
+                            <p class="text-slate-400 font-medium italic">No matching resources found.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            if (dashboardLinks) {
+                dashboardLinks.innerHTML = activeLinks.length > 0 ? linkHTML : `
+                    <div class="col-span-full p-8 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                        <p class="text-slate-400 text-sm italic">Add resources in Admin Panel to see them here.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function filterResources() {
+            const query = document.getElementById('resource-search').value.toLowerCase();
+            const filtered = allMoreLinks.filter(link => 
+                link.label.toLowerCase().includes(query) || 
+                link.url.toLowerCase().includes(query)
+            );
+            displayLinks(filtered);
+        }
+
+        async function updateTranslations() {
+            try {
+                // Fetch settings from api.php which includes brand name, favicon, more_links, and super_links
+                const res = await fetch(`api.php?action=get_allowed_domains`);
+                if (!res.ok) throw new Error('Failed to fetch settings');
+                const data = await res.json();
+                const settings = data.settings || {};
+                
+                console.log("Global Settings Loaded:", settings);
+
+                const brand = settings.brand_name || 'F Mail';
+                document.title = `${brand} - Fast & Secure Temp Mail`;
+                const brandEls = document.querySelectorAll('.brand-name-text');
+                brandEls.forEach(el => el.innerText = brand);
+                const heroEl = document.querySelector('[data-key="hero_title"]');
+                if (heroEl) heroEl.innerText = brand;
+
+                // Render More Links from the settings object
+                renderMoreLinks(settings.more_links || []);
+                
+                // Render Super Services from the settings object
+                renderSuperLinks(settings.super_links || []);
+
+                // Update Favicon dynamically
+                if (settings.favicon_url) {
+                    let link = document.querySelector("link[rel*='icon']");
+                    if (!link) {
+                        link = document.createElement('link');
+                        link.rel = 'icon';
+                        document.getElementsByTagName('head')[0].appendChild(link);
+                    }
+                    link.href = settings.favicon_url;
+                }
+            } catch (e) {
+                console.error("Error fetching settings:", e);
+                // Fallback to clear loading states if API fails
+                renderMoreLinks([]);
+                renderSuperLinks([]);
+            }
+
+            const lang = translations[currentLang] || translations['en'];
+            document.querySelectorAll('.translate-key').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (lang[key]) el.innerText = lang[key];
+            });
+            if (document.getElementById('login-email')) document.getElementById('login-email').placeholder = lang.email_label || "Email";
+            if (document.getElementById('login-password')) document.getElementById('login-password').placeholder = lang.password_label_no_colon || "Password";
+            if (document.getElementById('feedback-textarea')) document.getElementById('feedback-textarea').placeholder = lang.feedback_placeholder || "Feedback...";
+        }
+
+        function renderSuperLinks(links) {
+            console.log("renderSuperLinks called with:", links);
+            const linksList = document.getElementById('super-links-list');
+            if (!linksList) return;
+            
+            // Filter only active links
+            const activeLinks = (links && Array.isArray(links)) ? links.filter(link => (link.status === undefined || link.status === 'on')) : [];
+            
+            if (activeLinks.length > 0) {
+                linksList.innerHTML = activeLinks.map(link => `
+                    <a href="${link.url}" target="_blank" class="group relative bg-white dark:bg-slate-800 p-8 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl hover:border-amber-500/50 transition-all duration-500 overflow-hidden">
+                        <div class="relative z-10">
+                            <div class="w-14 h-14 bg-amber-50 dark:bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600 mb-6 group-hover:scale-110 transition-transform duration-500">
+                                ${link.image ? `<img src="${link.image}" class="w-10 h-10 object-contain rounded-lg" alt="${link.label}">` : `<i class="fas fa-crown text-2xl"></i>`}
+                            </div>
+                            <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-2">${link.label}</h4>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 line-clamp-2">${link.description || 'Premium super service for enhanced mail experience.'}</p>
+                            <div class="flex items-center gap-2 text-amber-600 font-bold text-sm">
+                                <span>Access Service</span>
+                                <i class="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                        <!-- Decorative bg elements -->
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+                    </a>
+                `).join('');
+            } else {
+                linksList.innerHTML = `
+                    <div class="col-span-full py-20 text-center">
+                        <div class="w-20 h-20 bg-slate-50 dark:bg-slate-700/30 rounded-full flex items-center justify-center mx-auto text-slate-300 mb-6">
+                            <i class="fas fa-gem text-3xl"></i>
+                        </div>
+                        <p class="text-slate-400 font-bold italic">Exclusive super services coming soon.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('mail_lang', lang);
+            updateTranslations();
+            document.getElementById('language-dropdown').classList.add('hidden');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebar-backdrop').classList.toggle('hidden');
+        }
+
+        function toggleLanguageMenu(e) {
+            if (e) e.stopPropagation();
+            document.getElementById('language-dropdown').classList.toggle('hidden');
+            document.getElementById('account-menu').classList.add('hidden');
+        }
+
+        function toggleAccountMenu(e) {
+            if (e) e.stopPropagation();
+            document.getElementById('account-menu').classList.toggle('hidden');
+            document.getElementById('language-dropdown').classList.add('hidden');
+            if (account) document.getElementById('menu-address').innerText = account.address;
+        }
+
+        async function createNewAccount() {
+            try {
+                const res = await fetch(`${API_URL}/domains`);
+                if (!res.ok) throw new Error('Failed to fetch domains');
+                const domains = await res.json();
+                const mem = domains['hydra:member'];
+                if (!mem || mem.length === 0) throw new Error('No domains available');
+                const dom = mem[Math.floor(Math.random() * mem.length)].domain;
+                const addr = Math.random().toString(36).substring(2, 10) + '@' + dom;
+                const pass = Math.random().toString(36).substring(2, 15);
+                account = { address: addr };
+                password = pass;
+                updateUI();
+                
+                const createRes = await fetch(`${API_URL}/accounts`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ address: addr, password: pass }) 
+                });
+                if (!createRes.ok) {
+                    const errData = await createRes.json();
+                    throw new Error(errData.detail || 'Failed to create account');
+                }
+
+                const tRes = await fetch(`${API_URL}/token`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ address: addr, password: pass }) 
+                });
+                if (!tRes.ok) throw new Error('Failed to obtain token');
+                const tData = await tRes.json();
+                token = tData.token;
+                
+                const mRes = await fetch(`${API_URL}/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!mRes.ok) throw new Error('Failed to fetch account details');
+                account = await mRes.json();
+                
+                localStorage.setItem('mail_token', token);
+                localStorage.setItem('mail_acc', JSON.stringify(account));
+                localStorage.setItem('mail_pass', password);
+                updateUI();
+            } catch (err) { 
+                console.error('Account Creation Error:', err);
+                alert('Account creation failed: ' + err.message);
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            alert('Copied to clipboard!');
+        }
+
+        function updateUI() {
+            const hasAccount = account !== null;
+            const apiNoAccount = document.getElementById('api-no-account');
+            const apiHasAccount = document.getElementById('api-has-account');
+            if (apiNoAccount) {
+                if (hasAccount) apiNoAccount.classList.add('hidden');
+                else apiNoAccount.classList.remove('hidden');
+            }
+            if (apiHasAccount) {
+                if (hasAccount) apiHasAccount.classList.remove('hidden');
+                else apiHasAccount.classList.add('hidden');
+            }
+            const currentAddressEl = document.getElementById('current-address');
+            const menuAddressEl = document.getElementById('menu-address');
+            const premiumFromEl = document.getElementById('premium-from');
+            if (hasAccount && account.address) {
+                if (currentAddressEl) currentAddressEl.innerText = account.address;
+                if (menuAddressEl) menuAddressEl.innerText = account.address;
+                if (premiumFromEl) premiumFromEl.value = account.address;
+                if (document.getElementById('api-endpoint-display')) {
+                    const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+                    document.getElementById('api-endpoint-display').innerText = `${baseUrl}/api.php?action=fetch_mail_via_api`;
+                }
+                document.getElementById('user-avatar').innerText = account.address[0].toUpperCase();
+                refreshMessages();
+            } else {
+                if (currentAddressEl) currentAddressEl.innerText = '';
+                if (menuAddressEl) menuAddressEl.innerText = '';
+                if (premiumFromEl) premiumFromEl.value = '';
+                document.getElementById('user-avatar').innerText = '?';
+            }
+        }
+
+        async function handleSidebarRefresh(btn) {
+            const icon = btn.querySelector('i');
+            if (icon) icon.classList.add('fa-spin');
+            await refreshMessages();
+            if (icon) setTimeout(() => icon.classList.remove('fa-spin'), 1000);
+        }
+
+        let lastMessageCount = parseInt(localStorage.getItem('mail_last_count') || '0');
+
+        async function refreshMessages() {
+            if (!token) return;
+            const spin = document.getElementById('refresh-spin');
+            const skeleton = document.getElementById('messages-skeleton');
+            const grid = document.getElementById('messages-grid');
+            
+            if (spin) spin.classList.add('fa-spin');
+            if (skeleton && grid.innerHTML.trim() === "" || grid.querySelector('.py-20')) {
+                skeleton.classList.remove('hidden');
+            }
+
+            try {
+                // Parallel fetch for account details (storage) and messages
+                const [meRes, msgRes] = await Promise.all([
+                    fetch('api.php?action=me', { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch(`${API_URL}/messages`, { headers: { 'Authorization': `Bearer ${token}` } })
+                ]);
+                
+                if (meRes.status === 401 || msgRes.status === 401) {
+                    await createNewAccount();
+                    return;
+                }
+
+                const [meData, msgData] = await Promise.all([
+                    meRes.json(),
+                    msgRes.json()
+                ]);
+                
+                const meInfo = meData.me || meData;
+                const meSettings = meData.settings || {};
+                
+                if (meSettings.more_links) renderMoreLinks(meSettings.more_links);
+                if (meInfo.used !== undefined) updateStorageUI(meInfo.used, meInfo.quota || 104857600);
+
+                // Update dashboard stats
+                if (document.getElementById('dash-stats-received')) {
+                    document.getElementById('dash-stats-received').innerText = msgs.length;
+                }
+                if (account && account.createdAt && document.getElementById('dash-stats-age')) {
+                    const created = new Date(account.createdAt);
+                    const diff = Math.floor((new Date() - created) / (1000 * 60)); // minutes
+                    document.getElementById('dash-stats-age').innerText = diff < 60 ? diff + 'm' : Math.floor(diff/60) + 'h';
+                }
+
+                const msgs = msgData['hydra:member'] || [];
+                if (skeleton) skeleton.classList.add('hidden');
+                
+                if (msgs.length > 0) {
+                    // Play sound ONLY if new messages arrived (count increased)
+                    // And only if it's not the very first load of an existing account
+                    if (lastMessageCount > 0 && msgs.length > lastMessageCount) {
+                        notificationSound.play().catch(e => console.log("Sound play blocked."));
+                    }
+                    lastMessageCount = msgs.length;
+                    localStorage.setItem('mail_last_count', lastMessageCount);
+                    
+                    document.getElementById('stats-received').innerText = msgs.length;
+                    
+                    const sortedMsgs = [...msgs].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    
+                    // Hide hero, dashboard stats, and feature cards when mail is received
+                    document.getElementById('hero').classList.add('hidden');
+                    if (document.getElementById('dashboard-stats')) document.getElementById('dashboard-stats').classList.add('hidden');
+                    if (document.getElementById('feature-cards')) document.getElementById('feature-cards').classList.add('hidden');
+                    document.getElementById('messages-list').classList.remove('hidden');
+                    
+                    // Show messages grid
+                    grid.classList.remove('hidden');
+                    
+                    grid.innerHTML = sortedMsgs.map((m, index) => `
+                        <div class="relative group mail-card-animation mail-item-anim" style="animation-delay: ${index * 0.05}s">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <input type="checkbox" data-id="${m.id}" class="mail-checkbox w-5 h-5 rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                            </div>
+                            <button onclick="viewMessage('${m.id}')" class="w-full text-left p-6 pl-14 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-all flex items-center gap-6 group border-b border-slate-50 dark:border-slate-700/50 last:border-0 hover:shadow-md relative">
+                                <div class="relative shrink-0">
+                                    <div class="w-14 h-14 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center uppercase font-extrabold text-indigo-600 dark:text-indigo-400 text-lg group-hover:scale-110 transition-transform">
+                                        ${m.from.address[0]}
+                                    </div>
+                                    <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 ${m.seen ? 'bg-slate-300' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]'} border-2 border-white dark:border-slate-800 rounded-full animate-pulse-slow"></div>
+                                </div>
+                                <div class="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-2 gap-x-12 items-center">
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-2 mb-0.5">
+                                            <span class="font-extrabold text-slate-900 dark:text-white truncate text-[17px]">${m.from.name || m.from.address.split('@')[0]}</span>
+                                            ${!m.seen ? '<span class="w-2 h-2 bg-indigo-600 rounded-full"></span>' : ''}
+                                        </div>
+                                        <span class="text-[13px] text-slate-400 dark:text-slate-500 truncate font-medium block italic">${m.from.address}</span>
+                                    </div>
+                                    <div class="min-w-0 md:pl-6 border-l-0 md:border-l border-slate-100 dark:border-slate-700/50">
+                                        <div class="text-[15px] ${m.seen ? 'font-semibold text-slate-500' : 'font-bold text-slate-900 dark:text-white'} truncate mb-1">${m.subject || '(No Subject)'}</div>
+                                        <div class="text-[13px] text-slate-400 dark:text-slate-500 truncate line-clamp-1 font-medium">${m.intro || ''}</div>
+                                    </div>
+                                </div>
+                                <div class="shrink-0 flex flex-col items-end gap-2">
+                                    <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
+                                        ${new Date(m.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="event.stopPropagation(); deleteIndividualMessage('${m.id}')" class="p-2 text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100" title="Delete">
+                                            <i class="fas fa-trash-alt text-xs"></i>
+                                        </button>
+                                        <i class="fas fa-chevron-right text-xs text-slate-200 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all"></i>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('hero').classList.remove('hidden');
+                    if (document.getElementById('dashboard-stats')) document.getElementById('dashboard-stats').classList.remove('hidden');
+                    if (document.getElementById('feature-cards')) document.getElementById('feature-cards').classList.remove('hidden');
+                    document.getElementById('messages-list').classList.add('hidden');
+                    grid.classList.add('hidden');
+                    grid.innerHTML = `
+                        <div class="py-20 text-center space-y-4 float-anim">
+                            <div class="w-20 h-20 bg-slate-50 dark:bg-slate-700/30 rounded-full flex items-center justify-center mx-auto text-slate-300 shadow-inner">
+                                <i class="fas fa-inbox text-3xl"></i>
+                            </div>
+                            <p class="text-slate-400 font-bold italic">Your inbox is empty.</p>
+                        </div>
+                    `;
+                }
+            } catch (err) { 
+                console.error("Refresh failed:", err);
+            } finally { 
+                if (spin) setTimeout(() => spin.classList.remove('fa-spin'), 500); 
+            }
+        }
+
+        function showWarningModal() {
+            const modal = document.getElementById('warning-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                // Ensure no background tasks affect the modal performance
+            }
+        }
+        function hideWarningModal() { document.getElementById('warning-modal').classList.add('hidden'); }
+
+        async function viewMessage(id) {
+            try {
+                const modalBody = document.getElementById('modal-body');
+                if (modalBody) modalBody.innerHTML = '<div class="flex justify-center p-10"><i class="fas fa-spinner fa-spin text-3xl text-indigo-600"></i></div>';
+                
+                const res = await fetch(`${API_URL}/messages/${id}`, { 
+                    headers: { 'Authorization': `Bearer ${token}` } 
+                });
+                
+                if (res.status === 401) {
+                    alert('Session expired. Refreshing...');
+                    await createNewAccount();
+                    return;
+                }
+                
+                if (!res.ok) throw new Error(`Server returned ${res.status}`);
+                
+                const msg = await res.json();
+                
+                document.getElementById('modal-subject').innerText = msg.subject || '(No Subject)';
+                document.getElementById('modal-meta').innerText = `From: ${msg.from.address}`;
+                if (document.getElementById('modal-date')) {
+                    document.getElementById('modal-date').innerText = new Date(msg.createdAt).toLocaleString();
+                }
+                if (document.getElementById('modal-avatar')) {
+                    document.getElementById('modal-avatar').innerText = msg.from.address[0];
+                }
+                
+                let content = "";
+                if (msg.html && msg.html.length > 0) {
+                    content = msg.html[0];
+                } else if (msg.text) {
+                    content = `<pre class="whitespace-pre-wrap font-sans text-sm">${msg.text}</pre>`;
+                } else {
+                    content = '<p class="text-slate-400 italic">No content available.</p>';
+                }
+                
+                document.getElementById('modal-body').innerHTML = content;
+                const deleteBtn = document.getElementById('modal-delete-btn');
+                if (deleteBtn) {
+                    deleteBtn.onclick = () => deleteIndividualMessage(id);
+                }
+                document.getElementById('message-modal').classList.remove('hidden');
+                
+                // Mark as read (Mail.tm automatically handles this on fetch usually, but we can verify)
+            } catch (err) { 
+                console.error("View Message Error:", err);
+                alert("Failed to load message: " + err.message);
+            }
+        }
+
+        async function deleteIndividualMessage(id) {
+            if (!token) return;
+            if (!confirm('Delete this message permanently?')) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/messages/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (res.status === 204) {
+                    closeModal();
+                    await refreshMessages();
+                } else {
+                    const data = await res.json();
+                    alert('Failed to delete message: ' + (data.detail || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Delete Message Error:', err);
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function deleteSelectedMessages() {
+            const checkboxes = document.querySelectorAll('.mail-checkbox:checked');
+            const ids = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
+            
+            if (ids.length === 0) return;
+            if (!confirm(`Are you sure you want to delete ${ids.length} selected messages?`)) return;
+
+            const btn = document.querySelector('#bulk-actions button');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-sm"></i>';
+
+            try {
+                // Delete in parallel
+                await Promise.all(ids.map(id => 
+                    fetch(`${API_URL}/messages/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    })
+                ));
+                
+                await refreshMessages();
+                updateBulkActionsUI();
+            } catch (err) {
+                console.error('Bulk Delete Error:', err);
+                alert('Error during bulk deletion. Some messages might not have been deleted.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            }
+        }
+
+        function updateBulkActionsUI() {
+            const checkboxes = document.querySelectorAll('.mail-checkbox:checked');
+            const count = checkboxes.length;
+            const bulkActions = document.getElementById('bulk-actions');
+            const countEl = document.getElementById('selected-count');
+            
+            if (bulkActions && countEl) {
+                if (count > 0) {
+                    bulkActions.classList.remove('hidden');
+                    bulkActions.classList.add('flex');
+                    countEl.innerText = `${count} selected`;
+                } else {
+                    bulkActions.classList.add('hidden');
+                    bulkActions.classList.remove('flex');
+                }
+            }
+        }
+
+        // Delegate checkbox changes to update UI
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('mail-checkbox')) {
+                updateBulkActionsUI();
+            }
+        });
+
+        function closeModal() { document.getElementById('message-modal').classList.add('hidden'); }
+        function copyAddress() {
+            if (account && account.address) {
+                navigator.clipboard.writeText(account.address);
+                
+                const icon = document.getElementById('copy-status-icon');
+                const headerIcon = document.getElementById('header-copy-icon');
+                
+                if (icon) {
+                    icon.classList.remove('fa-envelope');
+                    icon.classList.add('fa-check', 'text-green-500');
+                    setTimeout(() => {
+                        icon.classList.remove('fa-check', 'text-green-500');
+                        icon.classList.add('fa-envelope');
+                    }, 2000);
+                }
+                
+                if (headerIcon) {
+                    headerIcon.classList.remove('fa-copy');
+                    headerIcon.classList.add('fa-check', 'text-green-500');
+                    setTimeout(() => {
+                        headerIcon.classList.remove('fa-check', 'text-green-500');
+                        headerIcon.classList.add('fa-copy');
+                    }, 2000);
+                }
+            }
+        }
+        
+        function showPage(p) {
+            console.log("showPage called with:", p);
+            const sections = ['inbox', 'api', 'faq', 'privacy', 'feedback', 'contacts', 'premium', 'admin', 'more', 'super'];
+            sections.forEach(id => {
+                const el = document.getElementById('page-' + id);
+                if (el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('active');
+                }
+            });
+            const target = document.getElementById('page-' + p);
+            if (target) {
+                target.classList.remove('hidden');
+                setTimeout(() => target.classList.add('active'), 10);
+                
+                // Active link style
+                document.querySelectorAll('.sidebar-link, #btn-more').forEach(btn => {
+                    btn.classList.remove('active', 'text-indigo-600', 'bg-indigo-50', 'text-amber-600', 'bg-amber-50', 'text-emerald-600', 'bg-emerald-50', 'text-blue-600', 'bg-blue-50', 'text-pink-600', 'bg-pink-50', 'text-violet-600', 'bg-violet-50', 'text-orange-600', 'bg-orange-50', 'text-rose-600', 'bg-rose-50');
+                    btn.classList.add('text-slate-600');
+                });
+                
+                const activeBtn = document.getElementById('btn-' + p) || (p === 'api' ? document.getElementById('btn-api-nav') : null);
+                if (activeBtn) {
+                    let colorClass = 'indigo';
+                    if (p === 'super') colorClass = 'amber';
+                    else if (p === 'premium') colorClass = 'violet';
+                    else if (p === 'api') colorClass = 'pink';
+                    else if (p === 'faq') colorClass = 'emerald';
+                    else if (p === 'privacy') colorClass = 'blue';
+                    else if (p === 'feedback') colorClass = 'orange';
+                    else if (p === 'contacts') colorClass = 'rose';
+                    
+                    activeBtn.classList.add('active', `text-${colorClass}-600`, `bg-${colorClass}-50`);
+                    activeBtn.classList.remove('text-slate-600');
+                }
+            } else {
+                console.error('Page section not found: page-' + p);
+            }
+            
+            if (p === 'api') listOwnKeys();
+            if (p === 'admin') refreshAdminStats();
+            
+            // Close mobile sidebar on navigation
+            if (document.getElementById('sidebar') && !document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+        }
+
+        function showDeleteModal() { document.getElementById('delete-modal').classList.remove('hidden'); document.getElementById('account-menu').classList.add('hidden'); }
+        function hideDeleteModal() { document.getElementById('delete-modal').classList.add('hidden'); }
+        function logout() { localStorage.clear(); location.reload(); }
+        function confirmDelete() { logout(); }
+
+        function submitFeedback() {
+            const text = document.getElementById('feedback-textarea').value;
+            if (text) { 
+                alert('Feedback submitted! Thank you.'); 
+                document.getElementById('feedback-textarea').value = ''; 
+            }
+        }
+
+        let isPassVisible = false;
+        function togglePasswordReveal() {
+            if (!password) {
+                // Fallback to local storage if password variable is empty
+                password = localStorage.getItem('mail_pass');
+            }
+            if (!password) return;
+            
+            isPassVisible = !isPassVisible;
+            const passEl = document.getElementById('menu-password-masked');
+            const eyeIcon = document.getElementById('pass-eye-icon');
+            
+            if (isPassVisible) {
+                passEl.innerText = password;
+                if (eyeIcon) {
+                    eyeIcon.classList.remove('fa-eye');
+                    eyeIcon.classList.add('fa-eye-slash');
+                }
+                
+                // Copy to clipboard
+                navigator.clipboard.writeText(password).then(() => {
+                    // Visual feedback
+                    passEl.classList.add('text-emerald-500');
+                    setTimeout(() => {
+                        passEl.classList.remove('text-emerald-500');
+                    }, 1500);
+                });
+            } else {
+                passEl.innerText = '••••••••••••';
+                if (eyeIcon) {
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                }
+            }
+        }
+
+        function showCreateAccountModal() {
+            document.getElementById('create-account-modal').classList.remove('hidden');
+            document.getElementById('account-menu').classList.add('hidden');
+            document.getElementById('custom-password').value = Math.random().toString(36).substring(2, 12);
+            loadDomainsForCustomCreate();
+        }
+        function hideCreateAccountModal() { document.getElementById('create-account-modal').classList.add('hidden'); }
+
+        async function loadDomainsForCustomCreate() {
+            const select = document.getElementById('custom-domain');
+            if (select) {
+                try {
+                    const res = await fetch(`api.php?action=get_allowed_domains`);
+                    const data = await res.json();
+                    if (data.domains) {
+                        select.innerHTML = data.domains.map(d => `<option value="${d}" class="font-bold py-2">${d}</option>`).join('');
+                    }
+                } catch (err) {
+                    // Fallback to hardcoded list if API fails
+                    const domains = ["dollicons.com", "oakon.com", "teihu.com", "raleigh-construction.com", "pastryofistanbul.com", "questtechsystems.com"];
+                    select.innerHTML = domains.map(d => `<option value="${d}" class="font-bold py-2">${d}</option>`).join('');
+                }
+            }
+        }
+
+        async function performCustomCreate() {
+            const user = document.getElementById('custom-username').value;
+            const dom = document.getElementById('custom-domain').value;
+            const pass = document.getElementById('custom-password').value;
+            const error = document.getElementById('username-error');
+            
+            if (!user) {
+                error.classList.remove('hidden');
+                return;
+            }
+            error.classList.add('hidden');
+
+            // dollicons.com belongs to Mail.tm, others belong to Mail.gw
+            const mailTmDomains = ["dollicons.com"];
+            const targetApiUrl = mailTmDomains.includes(dom) ? 'https://api.mail.tm' : 'https://api.mail.gw';
+
+            try {
+                const addr = `${user}@${dom}`;
+                const finalPass = pass || Math.random().toString(36).substring(2, 15);
+                
+                // Set temporary account object to update UI instantly
+                account = { address: addr };
+                updateUI();
+
+                // Use the correct API URL for the selected domain
+                const createRes = await fetch(`${targetApiUrl}/accounts`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ address: addr, password: finalPass }) 
+                });
+
+                if (!createRes.ok) {
+                    const errData = await createRes.json();
+                    throw new Error(errData.detail || "Creation failed");
+                }
+                
+                const tRes = await fetch(`${targetApiUrl}/token`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ address: addr, password: finalPass }) 
+                });
+                const tData = await tRes.json();
+                token = tData.token;
+                
+                // Switch global API_URL if we successfully created account on a different provider
+                if (targetApiUrl !== API_URL) {
+                    API_URL = targetApiUrl;
+                    localStorage.setItem('mail_api_url', API_URL);
+                }
+
+                const mRes = await fetch(`${API_URL}/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+                account = await mRes.json();
+                password = finalPass;
+                
+                localStorage.setItem('mail_token', token);
+                localStorage.setItem('mail_acc', JSON.stringify(account));
+                localStorage.setItem('mail_pass', password);
+                
+                hideCreateAccountModal();
+                updateUI();
+            } catch (err) { 
+                console.error(err);
+                alert("Creation failed: " + err.message);
+                // Re-sync UI if failed
+                account = JSON.parse(localStorage.getItem('mail_acc')) || null;
+                updateUI();
+            }
+        }
+
+        function toggleCustomPasswordReveal() {
+            const input = document.getElementById('custom-password');
+            const eye = document.getElementById('custom-pass-eye');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
+            } else {
+                input.type = 'password';
+                eye.classList.remove('fa-eye');
+                eye.classList.add('fa-eye-slash');
+            }
+        }
+
+        async function performLogin() {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            if (!email || !pass) { alert('Enter credentials'); return; }
+            try {
+                const tRes = await fetch(`${API_URL}/token`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address: email, password: pass }) });
+                if (!tRes.ok) throw new Error();
+                const tData = await tRes.json();
+                token = tData.token;
+                const mRes = await fetch(`${API_URL}/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+                account = await mRes.json();
+                password = pass;
+                localStorage.setItem('mail_token', token);
+                localStorage.setItem('mail_acc', JSON.stringify(account));
+                localStorage.setItem('mail_pass', password);
+                location.reload();
+            } catch (err) { alert('Login failed'); }
+        }
+
+        async function generateOwnKey() {
+            if (!account || !password) return;
+            const btn = document.getElementById('api-gen-btn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Generating...';
+            try {
+                const url = `api.php?action=generate_key&address=${encodeURIComponent(account.address)}&password=${encodeURIComponent(password)}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.api_key) await listOwnKeys();
+                else if (data.error) alert(data.error);
+            } catch (err) { alert('Failed to generate key'); }
+            finally { btn.disabled = false; btn.innerHTML = originalText; }
+        }
+
+        async function listOwnKeys() {
+            if (!account) return;
+            try {
+                const res = await fetch(`api.php?action=list_keys&address=${account.address}`);
+                const keys = await res.json();
+                const container = document.getElementById('api-keys-list');
+                
+                // Update Session Stats for Keys
+                const statsKeys = document.getElementById('stats-keys');
+                if (statsKeys) statsKeys.innerText = keys.length;
+
+                const lang = translations[currentLang] || translations['en'];
+                if (!keys || keys.length === 0) { 
+                    container.innerHTML = `<p class="mt-4 text-slate-400 text-sm translate-key" data-key="no_keys">${lang.no_keys || "No keys found."}</p>`; 
+                    return; 
+                }
+                container.innerHTML = '<div class="mt-6 space-y-3">' + keys.map(k => `
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex justify-between items-center transition-all hover:border-indigo-100 dark:hover:border-indigo-900/30 group">
+                        <div class="flex flex-col gap-1 min-w-0 flex-1">
+                            <code class="text-xs font-mono text-slate-600 dark:text-slate-400 truncate break-all">${k.api_key}</code>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] uppercase font-bold text-green-500 bg-green-50 dark:bg-green-500/10 px-1.5 py-0.5 rounded">${k.status}</span>
+                                <span class="text-[10px] text-slate-400 font-medium">${new Date(k.created_at).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteApiKey('${k.api_key}')" class="p-2 text-slate-300 hover:text-red-500 transition-colors shrink-0"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `).join('') + '</div>';
+            } catch (err) { console.error(err); }
+        }
+
+        async function deleteApiKey(key) {
+            const lang = translations[currentLang] || translations['en'];
+            if (!confirm(lang.delete_key_confirm || 'Are you sure you want to delete this API key?')) return;
+            try {
+                await fetch(`api.php?action=delete_key&api_key=${key}`);
+                listOwnKeys();
+            } catch (err) { console.error(err); }
+        }
+
+        let adminPass = null;
+        function checkAdmin() {
+            const query = new URLSearchParams(window.location.search);
+            if (query.get('admin') === 'true') {
+                const pass = prompt('Enter Admin Password:');
+                if (pass === 'admin123') {
+                    adminPass = pass;
+                    document.getElementById('btn-admin').classList.remove('hidden');
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        async function refreshAdminStats() {
+            if (!adminPass) return;
+            const icon = document.getElementById('admin-sync-icon');
+            if (icon) icon.classList.add('fa-spin');
+            try {
+                const res = await fetch(`api.php?action=admin_stats&admin_pass=${adminPass}`);
+                const data = await res.json();
+                document.getElementById('admin-total-accounts').innerText = data.total_accounts || '0';
+                document.getElementById('admin-total-keys').innerText = data.total_keys || '0';
+                document.getElementById('admin-active-keys').innerText = data.active_keys || '0';
+                document.getElementById('admin-recent-list').innerHTML = data.recent_accounts?.map(acc => `<div class="p-4 flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-400 uppercase">${acc.address[0]}</div><div class="min-w-0 flex-1"><p class="text-sm font-bold text-slate-900 dark:text-white truncate">${acc.address}</p><p class="text-[10px] text-slate-400 uppercase font-bold">${new Date(acc.created_at).toLocaleDateString()}</p></div></div>`).join('') || '<p class="p-4 text-sm text-slate-400">No signups yet</p>';
+                await refreshAdminAccounts();
+                await refreshAdminActivity();
+                
+                // Initialize the links editor with current settings
+                await loadAdminLinks();
+            } catch (err) { console.error(err); }
+            finally { if (icon) setTimeout(() => icon.classList.remove('fa-spin'), 500); }
+        }
+
+        async function loadAdminLinks() {
+            try {
+                const res = await fetch(`api.php?action=get_allowed_domains`);
+                const data = await res.json();
+                const links = data.settings?.more_links || [];
+                const container = document.getElementById('admin-links-editor');
+                if (container) {
+                    container.innerHTML = '';
+                    links.forEach(link => addLinkRow(link));
+                    if (links.length === 0) addLinkRow(); // Add one empty row if none exist
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function addLinkRow(data = {label: '', url: '', image: ''}) {
+            const container = document.getElementById('admin-links-editor');
+            if (!container) return;
+            
+            const div = document.createElement('div');
+            div.className = "flex flex-col md:flex-row gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 group relative";
+            div.innerHTML = `
+                <div class="flex-1 space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Label</label>
+                    <input type="text" placeholder="e.g. Facebook" class="link-label w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-sm focus:ring-2 focus:ring-indigo-500" value="${data.label}">
+                </div>
+                <div class="flex-1 space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">URL</label>
+                    <input type="url" placeholder="https://..." class="link-url w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-sm focus:ring-2 focus:ring-indigo-500" value="${data.url}">
+                </div>
+                <div class="flex-1 space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Icon URL (Optional)</label>
+                    <input type="text" placeholder="https://.../icon.svg" class="link-image w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-sm focus:ring-2 focus:ring-indigo-500" value="${data.image || ''}">
+                </div>
+                <button onclick="this.parentElement.remove()" class="mt-6 md:mt-0 p-2 text-slate-300 hover:text-red-500 transition-colors">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            `;
+            container.appendChild(div);
+        }
+
+        async function saveAdminLinks() {
+            if (!adminPass) return;
+            const btn = document.getElementById('btn-save-links');
+            const originalText = btn.innerHTML;
+            
+            const rows = document.querySelectorAll('#admin-links-editor > div');
+            const links = [];
+            rows.forEach(row => {
+                const label = row.querySelector('.link-label').value.trim();
+                const url = row.querySelector('.link-url').value.trim();
+                const image = row.querySelector('.link-image').value.trim();
+                if (label && url) {
+                    links.push({label, url, image});
+                }
+            });
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+
+            try {
+                const formData = new FormData();
+                formData.append('links', JSON.stringify(links));
+                formData.append('admin_pass', adminPass);
+
+                const res = await fetch(`api.php?action=admin_update_links`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Resources updated successfully!');
+                    updateTranslations(); // Refresh the frontend view
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Failed to save links');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        async function refreshAdminAccounts() {
+            if (!adminPass) return;
+            try {
+                const res = await fetch(`api.php?action=admin_list_accounts&admin_pass=${adminPass}`);
+                const accounts = await res.json();
+                document.getElementById('admin-accounts-table').innerHTML = accounts.map(acc => `<tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"><td class="px-6 py-4"><div class="flex flex-col"><span class="text-sm font-bold text-slate-900 dark:text-white">${acc.address}</span><span class="text-[10px] font-mono text-slate-400">${acc.account_id || 'N/A'}</span></div></td><td class="px-6 py-4 text-xs font-medium text-slate-500">${new Date(acc.created_at).toLocaleString()}</td><td class="px-6 py-4 text-right"><button onclick="deleteAdminAccount(${acc.id})" class="text-red-500 hover:text-red-700 transition-colors p-2"><i class="fas fa-trash-alt"></i></button></td></tr>`).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        async function refreshAdminActivity() {
+            if (!adminPass) return;
+            try {
+                const res = await fetch(`api.php?action=admin_list_activity&admin_pass=${adminPass}`);
+                const activities = await res.json();
+                document.getElementById('admin-activity-table').innerHTML = activities.map(act => `<tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"><td class="px-6 py-4 text-slate-500 font-medium">${new Date(act.created_at).toLocaleString()}</td><td class="px-6 py-4"><span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase ${act.action.includes('delete') ? 'bg-red-100 text-red-600' : act.action.includes('generate') ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}">${act.action}</span></td><td class="px-6 py-4 text-slate-600 dark:text-slate-400 truncate max-w-xs">${act.details}</td><td class="px-6 py-4 text-slate-400 font-mono text-xs">${act.ip_address}</td></tr>`).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        async function deleteAdminAccount(id) {
+            if (!confirm('Delete this account and all associated keys?')) return;
+            try {
+                const res = await fetch(`api.php?action=admin_delete_account&admin_pass=${adminPass}&id=${id}`);
+                const data = await res.json();
+                if (data.success) refreshAdminStats();
+            } catch (err) { console.error(err); }
+        }
+
+        async function sendPremiumEmail() {
+            // Get address from local storage if state is missing
+            if (!account || !account.address) {
+                const storedAcc = localStorage.getItem('mail_acc');
+                if (storedAcc) {
+                    account = JSON.parse(storedAcc);
+                }
+            }
+
+            if (!account || !account.address) {
+                alert('Account not loaded. Please wait or refresh.');
+                return;
+            }
+            const btn = document.getElementById('btn-premium-send');
+            const status = document.getElementById('premium-send-status');
+            const from = account.address; // Read directly from account state
+            const to = document.getElementById('premium-to').value;
+            const subject = document.getElementById('premium-subject').value;
+            let message = document.getElementById('premium-message').value;
+            const signature = document.getElementById('premium-signature').value;
+            
+            if (!to || !subject || !message) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Append signature if provided
+            if (signature) {
+                message += `\n\n--\n${signature}`;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            status.classList.add('hidden');
+
+            try {
+                const url = `api.php?action=send_external_mail&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(message)}`;
+                console.log('Sending Premium Mail:', url);
+                const res = await fetch(url);
+                const text = await res.text();
+                console.log('Premium Mail Raw Response:', text);
+                
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    throw new Error('Invalid server response: ' + text.substring(0, 100));
+                }
+                
+                status.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+                if (data.success) {
+                    status.classList.add('bg-green-100', 'text-green-700');
+                    status.innerText = 'Email sent successfully!';
+                    document.getElementById('premium-to').value = '';
+                    document.getElementById('premium-subject').value = '';
+                    document.getElementById('premium-message').value = '';
+                } else {
+                    status.classList.add('bg-red-100', 'text-red-700');
+                    status.innerText = 'Failed: ' + (data.error || 'Unknown error');
+                }
+            } catch (err) {
+                console.error('Premium Send Error:', err);
+                status.classList.remove('hidden');
+                status.classList.add('bg-red-100', 'text-red-700');
+                status.innerText = 'Error: ' + err.message;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Email';
+            }
+        }
+
+        function updateStorageProgress(used, quota) {
+            console.log("Updating storage progress:", {used, quota});
+            const usedMB = (used / (1024 * 1024)).toFixed(2);
+            const quotaMB = (quota / (1024 * 1024)).toFixed(0);
+            
+            const textEl = document.getElementById('storage-usage-text');
+            const barEl = document.getElementById('storage-progress-bar');
+            
+            if (textEl) textEl.innerText = `${usedMB} MB / ${quotaMB} MB`;
+            if (barEl) {
+                const percent = Math.min((used / quota) * 100, 100);
+                barEl.style.width = percent + '%';
+            }
+        }
+
+        const updateStorageUI = updateStorageProgress;
+
+        async function fetchMessages() {
+            if (!token) return;
+            try {
+                // Fetch storage info first
+                const meRes = await fetch('api.php?action=me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await meRes.json();
+                
+                const meData = data.me || data;
+                const meSettings = data.settings || {};
+                
+                if (meSettings.more_links) {
+                    renderMoreLinks(meSettings.more_links);
+                }
+                
+                if (meData && meData.used !== undefined && meData.quota !== undefined) {
+                    updateStorageUI(meData.used, meData.quota);
+                }
+
+                const res = await fetch(`https://api.mail.tm/messages`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const msgData = await res.json();
+                const msgs = msgData['hydra:member'];
+                
+                const container = document.getElementById('messages-grid');
+                if (container) {
+                    if (!msgs || msgs.length === 0) {
+                        container.innerHTML = `
+                            <div class="py-20 text-center space-y-4">
+                                <div class="w-20 h-20 bg-slate-50 dark:bg-slate-700/30 rounded-full flex items-center justify-center mx-auto text-slate-300">
+                                    <i class="fas fa-inbox text-3xl"></i>
+                                </div>
+                                <p class="text-slate-400 font-bold italic">Your inbox is empty.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    container.innerHTML = msgs.map(msg => `
+                        <button onclick="viewMessage('${msg.id}')" class="w-full text-left p-6 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-all flex items-center gap-6 group border-b border-slate-50 dark:border-slate-700/50 last:border-0 hover:shadow-md relative">
+                            <div class="relative shrink-0">
+                                <div class="w-14 h-14 rounded-full bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center uppercase font-extrabold text-pink-500 text-lg">
+                                    ${msg.from.address[0]}
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-2 gap-x-12 items-center">
+                                <div class="min-w-0">
+                                    <span class="font-extrabold text-indigo-600 dark:text-indigo-400 truncate text-[18px] block">${msg.from.name || msg.from.address.split('@')[0]}</span>
+                                    <span class="text-[14px] text-slate-500 dark:text-slate-400 truncate font-semibold block mt-1">${msg.from.address}</span>
+                                </div>
+                                <div class="min-w-0 md:pl-6 border-l-0 md:border-l border-slate-200 dark:border-slate-700">
+                                    <div class="text-[16px] font-extrabold text-slate-900 dark:text-white truncate mb-1">${msg.subject || '(No Subject)'}</div>
+                                    <div class="text-[14px] text-slate-400 dark:text-slate-500 truncate line-clamp-1 font-semibold">${msg.intro || ''}</div>
+                                </div>
+                            </div>
+                            <div class="shrink-0 text-xs text-slate-400 font-bold">
+                                ${new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </div>
+                        </button>
+                    `).join('');
+                }
+            } catch (err) { console.error("Fetch failed:", err); }
+        }
+
+        async function premiumDeleteAllMessages() {
+            if (!token) return;
+            if (!confirm('Are you sure you want to permanently delete ALL messages?')) return;
+            
+            const btn = document.getElementById('btn-premium-delete-all');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Deleting...';
+            
+            try {
+                const res = await fetch(`api.php?action=premium_delete_all`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`Successfully deleted ${data.deleted} messages.`);
+                    refreshMessages();
+                } else {
+                    alert('Failed to delete messages: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Delete All Error:', err);
+                alert('Error: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function premiumBackupAccount() {
+            if (!account || !password) {
+                alert('Account data not available.');
+                return;
+            }
+            const data = `Address: ${account.address}\nPassword: ${password}\nCreated: ${new Date(account.createdAt || Date.now()).toLocaleString()}`;
+            const blob = new Blob([data], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fmail_backup_${account.address.split('@')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        async function exportInbox() {
+            if (!token) return;
+            try {
+                const res = await fetch(`${API_URL}/messages`, { 
+                    headers: { 'Authorization': `Bearer ${token}` } 
+                });
+                const data = await res.json();
+                const msgs = data['hydra:member'];
+                
+                if (!msgs || msgs.length === 0) {
+                    alert("No messages to export.");
+                    return;
+                }
+
+                const blob = new Blob([JSON.stringify(msgs, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `inbox_export_${account.address}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error("Export failed:", err);
+                alert("Export failed. Please try again.");
+            }
+        }
+
+        let refreshInterval = null;
+        let refreshCountdown = 15;
+        let countdownTimer = null;
+
+        function toggleAutoRefresh() {
+            const isEnabled = document.getElementById('auto-refresh-toggle').checked;
+            const timerEl = document.getElementById('refresh-timer');
+            
+            // Clear any existing intervals first to prevent multiple timers
+            if (refreshInterval) clearInterval(refreshInterval);
+            if (countdownTimer) clearInterval(countdownTimer);
+            
+            if (isEnabled) {
+                timerEl.classList.remove('hidden');
+                resetCountdown();
+                startCountdown();
+                refreshInterval = setInterval(async () => {
+                    await refreshMessages();
+                    resetCountdown();
+                }, 15000);
+            } else {
+                timerEl.classList.add('hidden');
+                refreshCountdown = 15;
+            }
+        }
+
+        function startCountdown() {
+            const timerEl = document.getElementById('refresh-timer');
+            countdownTimer = setInterval(() => {
+                refreshCountdown--;
+                if (refreshCountdown < 0) refreshCountdown = 15;
+                timerEl.innerText = refreshCountdown + 's';
+            }, 1000);
+        }
+
+        function resetCountdown() {
+            refreshCountdown = 15;
+            document.getElementById('refresh-timer').innerText = '15s';
+        }
+
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            const icon = document.getElementById('dark-mode-icon');
+            if (darkMode) { 
+                document.documentElement.classList.add('dark'); 
+                document.body.classList.add('dark-mode'); 
+                icon.classList.remove('fa-moon'); 
+                icon.classList.add('fa-sun'); 
+                localStorage.setItem('dark_mode', 'true');
+            }
+            else { 
+                document.documentElement.classList.remove('dark'); 
+                document.body.classList.remove('dark-mode'); 
+                icon.classList.remove('fa-sun'); 
+                icon.classList.add('fa-moon'); 
+                localStorage.setItem('dark_mode', 'false');
+            }
+        }
+
+        // Initialize
+        renderLanguageMenu(); renderFAQ(); updateUI(); updateTranslations();
+        checkAdmin();
+        
+        // Auto-detect system dark mode or saved preference
+        const savedDarkMode = localStorage.getItem('dark_mode');
+        if (savedDarkMode === 'true' || (savedDarkMode === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            if (!darkMode) toggleDarkMode();
+        }
+        
+        // Ensure email shows up correctly if account exists
+        if (account) {
+            updateUI();
+        }
+        
+        // Only auto-create if we don't have any account data at all
+        if (!token && !account) {
+            createNewAccount();
+        }
+    </script>
+</body>
+</html>
